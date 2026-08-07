@@ -149,6 +149,8 @@
   <nav class="menu-principal">
     <button id="menuAlocacao" class="ativo">Alocação Territorial</button>
     <button id="menuGestaoAcoes">Gestão de Ações</button>
+    <button id="menuMonitoramento">Monitoramento</button>
+    <button id="menuVisaoGeral">Visão Geral</button>
   </nav>
 
   <main>
@@ -191,6 +193,138 @@
             <tbody id="corpoTabela"></tbody>
           </table>
         </div>
+      </section>
+    </div>
+
+    <!-- ===== PAINEL: MONITORAMENTO DAS METAS ===== -->
+    <div class="painel-conteudo" id="painelMonitoramento">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div class="situacao-texto" id="rotuloUltimaAtualizacaoMonitoramento" style="font-size:13px;"></div>
+        <button class="primario" id="botaoAtualizarMonitoramento">Atualizar monitoramento</button>
+      </div>
+
+      <div class="cartoes" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="cartao"><div class="valor" id="valorTotalMetas">-</div><div class="rotulo">total de metas</div></div>
+        <div class="cartao"><div class="valor" id="valorMetasAtingidas">-</div><div class="rotulo">metas atingidas</div></div>
+        <div class="cartao"><div class="valor" id="valorMetasEmExecucao">-</div><div class="rotulo">em execução</div></div>
+        <div class="cartao"><div class="valor" id="valorMetasEmAtencao">-</div><div class="rotulo">em atenção</div></div>
+        <div class="cartao"><div class="valor" id="valorMetasCriticas">-</div><div class="rotulo">críticas</div></div>
+        <div class="cartao"><div class="valor" id="valorMetasNaoIniciadas">-</div><div class="rotulo">não iniciadas</div></div>
+        <div class="cartao"><div class="valor" id="valorIndicadoresSemDados">-</div><div class="rotulo">sem dados suficientes</div></div>
+        <div class="cartao"><div class="valor" id="valorPercentualMedio">-</div><div class="rotulo">execução média</div></div>
+      </div>
+
+      <section>
+        <h2>Saúde geral do projeto</h2>
+        <div id="blocoSaudeGeral" style="padding:14px; border-radius:4px; font-weight:600; font-size:15px;"></div>
+      </section>
+
+      <section>
+        <h2>Ações e evidências</h2>
+        <div class="cartoes" style="grid-template-columns: repeat(4, 1fr); margin-bottom:0;">
+          <div class="cartao"><div class="valor" id="valorAcoesComPasta">-</div><div class="rotulo">ações com pasta no Drive</div></div>
+          <div class="cartao"><div class="valor" id="valorAcoesSemPasta">-</div><div class="rotulo">ações sem pasta no Drive</div></div>
+          <div class="cartao"><div class="valor" id="valorEvidenciasDisponiveis">-</div><div class="rotulo">evidências registradas</div></div>
+          <div class="cartao"><div class="valor" id="valorDivergenciasAbertas">-</div><div class="rotulo">divergências documentais abertas</div></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Pontos críticos</h2>
+        <p class="descricao-secao">Ordenados por prioridade - o que precisa de atenção imediata aparece primeiro.</p>
+        <div class="tabela-scroll" style="max-height:320px;">
+          <table>
+            <thead><tr><th>Indicador</th><th>Escopo</th><th>%</th><th>Situação</th><th>Risco</th><th>Diagnóstico</th></tr></thead>
+            <tbody id="corpoTabelaPontosCriticos"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Matriz de auditoria</h2>
+        <div class="filtros">
+          <select id="filtroEscopoMatriz">
+            <option value="">Escopo (todos)</option>
+            <option value="PROJETO">Projeto</option>
+            <option value="NUCLEO">Núcleo</option>
+            <option value="MODALIDADE">Modalidade</option>
+          </select>
+        </div>
+        <div class="tabela-scroll">
+          <table>
+            <thead><tr><th>Indicador</th><th>Previsto</th><th>Realizado</th><th>%</th><th>Situação</th><th>Risco</th><th>Documentação</th><th>Integridade</th></tr></thead>
+            <tbody id="corpoTabelaMatriz"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Visão por núcleo</h2>
+        <div class="nucleos-grid" id="gridMonitoramentoPorNucleo"></div>
+      </section>
+    </div>
+
+    <!-- ===== PAINEL: VISAO GERAL DO PROJETO ===== -->
+    <div class="painel-conteudo" id="painelVisaoGeral">
+      <section>
+        <h2 id="tituloVisaoGeralProjeto">CONEXÕES CRIATIVAS</h2>
+        <p class="descricao-secao" id="subtituloVisaoGeralProjeto"></p>
+        <div id="blocoSaudeGeralVisaoGeral" style="padding:12px; border-radius:4px; font-weight:600; font-size:14px; margin-top:10px;"></div>
+      </section>
+
+      <section>
+        <h2>Estrutura do projeto</h2>
+        <div class="cartoes" style="grid-template-columns: repeat(4, 1fr); margin-bottom:14px;">
+          <div class="cartao"><div class="valor" id="vgTotalNucleos">-</div><div class="rotulo">núcleos/territórios</div></div>
+          <div class="cartao"><div class="valor" id="vgTotalModalidades">-</div><div class="rotulo">modalidades pedagógicas</div></div>
+          <div class="cartao"><div class="valor" id="vgTurmasPrevistas">-</div><div class="rotulo">turmas previstas</div></div>
+          <div class="cartao"><div class="valor" id="vgVagasPorTurma">-</div><div class="rotulo">vagas previstas por turma</div></div>
+        </div>
+        <p class="descricao-secao"><strong>Núcleos:</strong> <span id="vgListaNucleos"></span></p>
+        <p class="descricao-secao"><strong>Modalidades:</strong> <span id="vgListaModalidades"></span></p>
+      </section>
+
+      <section>
+        <h2>Metas do projeto</h2>
+        <div class="tabela-scroll" style="max-height:280px;">
+          <table>
+            <thead><tr><th>Indicador</th><th>Previsto</th><th>Realizado</th><th>%</th><th>Situação</th><th>Risco</th></tr></thead>
+            <tbody id="corpoTabelaVgMetas"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Execução</h2>
+        <div class="cartoes" style="grid-template-columns: repeat(4, 1fr); margin-bottom:0;">
+          <div class="cartao"><div class="valor" id="vgAcoesCriadas">-</div><div class="rotulo">ações criadas</div></div>
+          <div class="cartao"><div class="valor" id="vgAcoesConcluidas">-</div><div class="rotulo">ações concluídas</div></div>
+          <div class="cartao"><div class="valor" id="vgAcoesEmExecucao">-</div><div class="rotulo">ações em execução</div></div>
+          <div class="cartao"><div class="valor" id="vgAcoesComPasta">-</div><div class="rotulo">ações com pasta no Drive</div></div>
+          <div class="cartao"><div class="valor" id="vgParticipantesConcluidos">-</div><div class="rotulo">participantes concluídos</div></div>
+          <div class="cartao"><div class="valor" id="vgCertificados">-</div><div class="rotulo">certificados emitidos</div></div>
+          <div class="cartao"><div class="valor" id="vgHorasRealizadas">-</div><div class="rotulo">horas realizadas</div></div>
+          <div class="cartao"><div class="valor" id="vgAcoesSemPasta">-</div><div class="rotulo">ações sem pasta no Drive</div></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Documentação</h2>
+        <div class="cartoes" style="grid-template-columns: repeat(4, 1fr); margin-bottom:0;">
+          <div class="cartao"><div class="valor" id="vgEvidenciasCadastradas">-</div><div class="rotulo">evidências cadastradas</div></div>
+          <div class="cartao"><div class="valor" id="vgEvidenciasValidadas">-</div><div class="rotulo">evidências validadas</div></div>
+          <div class="cartao"><div class="valor" id="vgDocCompleta">-</div><div class="rotulo">ações com documentação completa</div></div>
+          <div class="cartao"><div class="valor" id="vgDocIncompleta">-</div><div class="rotulo">ações com documentação incompleta</div></div>
+          <div class="cartao"><div class="valor" id="vgDivergencias">-</div><div class="rotulo">divergências documentais abertas</div></div>
+          <div class="cartao"><div class="valor" id="vgInconsistencias">-</div><div class="rotulo">ações com inconsistência</div></div>
+          <div class="cartao"><div class="valor" id="vgPontosCriticos">-</div><div class="rotulo">pontos críticos</div></div>
+          <div class="cartao"><div class="valor" id="vgPontosAtencao">-</div><div class="rotulo">pontos em atenção</div></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Última atualização do monitoramento</h2>
+        <p id="vgUltimaAtualizacao" class="descricao-secao"></p>
       </section>
     </div>
 
@@ -260,6 +394,14 @@
       <button class="secundario" id="botaoCancelarModalGenerico">Cancelar</button>
       <button class="primario" id="botaoConfirmarModalGenerico">Confirmar</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-fundo" id="modalDrillDown">
+  <div class="modal" style="max-width: 700px;">
+    <h3 id="tituloDrillDown">Detalhamento do indicador</h3>
+    <div id="corpoModalDrillDown" style="font-size: 13px; max-height: 420px; overflow-y: auto;"></div>
+    <div class="acoes-modal"><button class="primario" id="botaoFecharModalDrillDown">Fechar</button></div>
   </div>
 </div>
 
@@ -365,7 +507,9 @@
 
   menuAlocacao.addEventListener('click', function() {
     menuAlocacao.classList.add('ativo'); menuGestaoAcoes.classList.remove('ativo');
+    menuMonitoramento.classList.remove('ativo'); menuVisaoGeral.classList.remove('ativo');
     painelAlocacao.classList.add('ativo'); painelGestaoAcoes.classList.remove('ativo');
+    painelMonitoramento.classList.remove('ativo'); painelVisaoGeral.classList.remove('ativo');
     rodapeAlocacao.style.display = 'flex';
     document.getElementById('tituloTela').firstChild.textContent = 'ALOCAÇÃO TERRITORIAL';
     document.getElementById('subtituloTela').textContent = 'Distribuição das 216 turmas entre os 12 núcleos';
@@ -373,11 +517,40 @@
 
   menuGestaoAcoes.addEventListener('click', async function() {
     menuGestaoAcoes.classList.add('ativo'); menuAlocacao.classList.remove('ativo');
+    menuMonitoramento.classList.remove('ativo'); menuVisaoGeral.classList.remove('ativo');
     painelGestaoAcoes.classList.add('ativo'); painelAlocacao.classList.remove('ativo');
+    painelMonitoramento.classList.remove('ativo'); painelVisaoGeral.classList.remove('ativo');
     rodapeAlocacao.style.display = 'none';
     document.getElementById('tituloTela').firstChild.textContent = 'GESTÃO DE AÇÕES';
     document.getElementById('subtituloTela').textContent = 'Transformar programações alocadas em ações e criar as pastas no Drive';
     await carregarDadosGestaoAcoes();
+  });
+
+  const menuMonitoramento = document.getElementById('menuMonitoramento');
+  const menuVisaoGeral = document.getElementById('menuVisaoGeral');
+  const painelMonitoramento = document.getElementById('painelMonitoramento');
+  const painelVisaoGeral = document.getElementById('painelVisaoGeral');
+
+  menuMonitoramento.addEventListener('click', async function() {
+    menuMonitoramento.classList.add('ativo'); menuAlocacao.classList.remove('ativo');
+    menuGestaoAcoes.classList.remove('ativo'); menuVisaoGeral.classList.remove('ativo');
+    painelMonitoramento.classList.add('ativo'); painelAlocacao.classList.remove('ativo');
+    painelGestaoAcoes.classList.remove('ativo'); painelVisaoGeral.classList.remove('ativo');
+    rodapeAlocacao.style.display = 'none';
+    document.getElementById('tituloTela').firstChild.textContent = 'MONITORAMENTO DAS METAS';
+    document.getElementById('subtituloTela').textContent = 'Agente de auditoria - execução, documentação e integridade do projeto';
+    await carregarMonitoramento();
+  });
+
+  menuVisaoGeral.addEventListener('click', async function() {
+    menuVisaoGeral.classList.add('ativo'); menuAlocacao.classList.remove('ativo');
+    menuGestaoAcoes.classList.remove('ativo'); menuMonitoramento.classList.remove('ativo');
+    painelVisaoGeral.classList.add('ativo'); painelAlocacao.classList.remove('ativo');
+    painelGestaoAcoes.classList.remove('ativo'); painelMonitoramento.classList.remove('ativo');
+    rodapeAlocacao.style.display = 'none';
+    document.getElementById('tituloTela').firstChild.textContent = 'VISÃO GERAL DO PROJETO';
+    document.getElementById('subtituloTela').textContent = 'O que é o projeto, o que foi feito e qual é a situação atual';
+    await carregarVisaoGeral();
   });
 
   // ============================================================
@@ -752,6 +925,259 @@
       mostrarErro(e.message);
     }
   });
+
+  // ============================================================
+  // MONITORAMENTO DAS METAS + AGENTE DE AUDITORIA
+  // ============================================================
+  let dadosMatrizAuditoria = [];
+
+  function rotuloCriticidade(c) {
+    const mapa = {
+      NAO_INICIADA: 'Não iniciada', CRITICA: 'Crítica', ATENCAO: 'Atenção',
+      EM_EXECUCAO: 'Em execução', ATINGIDA: 'Atingida', DADO_INSUFICIENTE: 'Dado insuficiente'
+    };
+    return mapa[c] || c;
+  }
+  function rotuloRisco(r) {
+    const mapa = { RISCO_ALTO: 'Alto', RISCO_MEDIO: 'Médio', RISCO_BAIXO: 'Baixo', RISCO_CONTROLADO: 'Controlado' };
+    return mapa[r] || r;
+  }
+  function classeCriticidade(c) {
+    if (c === 'CRITICA') return 'aguardando';
+    if (c === 'ATINGIDA') return 'alocada';
+    return 'neutro';
+  }
+
+  async function carregarMonitoramento() {
+    try {
+      const [painel, matriz, pontosCriticos, porNucleo] = await Promise.all([
+        chamarApi('obterPainelExecutivo', [sessaoAtual.token]),
+        chamarApi('obterMatrizAuditoria', [sessaoAtual.token]),
+        chamarApi('obterPontosCriticos', [sessaoAtual.token]),
+        chamarApi('obterMonitoramentoPorNucleo', [sessaoAtual.token])
+      ]);
+      dadosMatrizAuditoria = matriz;
+      renderizarPainelExecutivo(painel);
+      renderizarPontosCriticos(pontosCriticos);
+      renderizarMatrizAuditoria(matriz);
+      renderizarMonitoramentoPorNucleo(porNucleo);
+
+      document.getElementById('rotuloUltimaAtualizacaoMonitoramento').textContent =
+        matriz.length > 0 && matriz[0].DATA_CALCULO
+          ? ('Última atualização: ' + new Date(matriz[0].DATA_CALCULO).toLocaleString('pt-BR'))
+          : 'Monitoramento ainda não foi calculado - clique em "Atualizar monitoramento".';
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  }
+
+  function renderizarPainelExecutivo(p) {
+    document.getElementById('valorTotalMetas').textContent = p.totalMetas;
+    document.getElementById('valorMetasAtingidas').textContent = p.metasAtingidas;
+    document.getElementById('valorMetasEmExecucao').textContent = p.metasEmExecucao;
+    document.getElementById('valorMetasEmAtencao').textContent = p.metasEmAtencao;
+    document.getElementById('valorMetasCriticas').textContent = p.metasCriticas;
+    document.getElementById('valorMetasNaoIniciadas').textContent = p.metasNaoIniciadas;
+    document.getElementById('valorIndicadoresSemDados').textContent = p.indicadoresSemDados;
+    document.getElementById('valorPercentualMedio').textContent =
+      p.percentualMedioExecucao === 'DADO_INSUFICIENTE' ? 'N/D' : p.percentualMedioExecucao + '%';
+    document.getElementById('valorAcoesComPasta').textContent = p.acoesComPastaNoDrive;
+    document.getElementById('valorAcoesSemPasta').textContent = p.acoesSemPastaNoDrive;
+    document.getElementById('valorEvidenciasDisponiveis').textContent = p.evidenciasDisponiveis;
+    document.getElementById('valorDivergenciasAbertas').textContent = p.divergenciasDocumentais;
+
+    const bloco = document.getElementById('blocoSaudeGeral');
+    const cores = {
+      CRITICO: { bg: '#FCEBEB', cor: '#A32D2D', texto: 'CRÍTICO' },
+      ATENCAO: { bg: '#FFF8E1', cor: '#8A6D00', texto: 'ATENÇÃO' },
+      CONTROLADO: { bg: '#EAF3DE', cor: '#3B6D11', texto: 'CONTROLADO' }
+    };
+    const c = cores[p.saudeGeralProjeto] || cores.CONTROLADO;
+    bloco.style.background = c.bg; bloco.style.color = c.cor;
+    bloco.textContent = 'SAÚDE GERAL DO PROJETO: ' + c.texto +
+      (p.itensDeAltoRisco > 0 ? ' — ' + p.itensDeAltoRisco + ' item(ns) de alto risco identificado(s)' : '');
+  }
+
+  function renderizarPontosCriticos(lista) {
+    const corpo = document.getElementById('corpoTabelaPontosCriticos');
+    corpo.innerHTML = '';
+    if (lista.length === 0) {
+      corpo.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#5F5E5A;">Nenhum ponto crítico identificado no momento.</td></tr>';
+      return;
+    }
+    lista.forEach(function(item) {
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.innerHTML =
+        '<td>' + escaparHtml(item.NOME_INDICADOR) + '</td>' +
+        '<td>' + escaparHtml(item.ESCOPO) + '</td>' +
+        '<td>' + escaparHtml(item.PERCENTUAL === 'DADO_INSUFICIENTE' ? 'N/D' : item.PERCENTUAL + '%') + '</td>' +
+        '<td><span class="status-badge ' + classeCriticidade(item.CRITICIDADE) + '">' + escaparHtml(rotuloCriticidade(item.CRITICIDADE)) + '</span></td>' +
+        '<td>' + escaparHtml(rotuloRisco(item.RISCO)) + '</td>' +
+        '<td>' + escaparHtml(item.DIAGNOSTICO) + '</td>';
+      tr.addEventListener('click', function() { abrirDrillDown(item.ID_INDICADOR); });
+      corpo.appendChild(tr);
+    });
+  }
+
+  function renderizarMatrizAuditoria(matriz) {
+    const filtro = document.getElementById('filtroEscopoMatriz').value;
+    const corpo = document.getElementById('corpoTabelaMatriz');
+    corpo.innerHTML = '';
+    matriz.filter(function(i) { return !filtro || i.ESCOPO === filtro; }).forEach(function(item) {
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.innerHTML =
+        '<td>' + escaparHtml(item.NOME_INDICADOR) + '</td>' +
+        '<td>' + escaparHtml(item.META_REFERENCIA) + '</td>' +
+        '<td>' + escaparHtml(item.VALOR) + '</td>' +
+        '<td>' + escaparHtml(item.PERCENTUAL === 'DADO_INSUFICIENTE' ? 'N/D' : item.PERCENTUAL + '%') + '</td>' +
+        '<td><span class="status-badge ' + classeCriticidade(item.CRITICIDADE) + '">' + escaparHtml(rotuloCriticidade(item.CRITICIDADE)) + '</span></td>' +
+        '<td>' + escaparHtml(rotuloRisco(item.RISCO)) + '</td>' +
+        '<td>' + (item.DOCUMENTACAO_INCOMPLETA ? 'Incompleta' : 'Completa') + '</td>' +
+        '<td>' + (item.INTEGRIDADE_COM_INCONSISTENCIA ? 'Com inconsistência' : 'OK') + '</td>';
+      tr.addEventListener('click', function() { abrirDrillDown(item.ID_INDICADOR); });
+      corpo.appendChild(tr);
+    });
+  }
+  document.getElementById('filtroEscopoMatriz').addEventListener('change', function() { renderizarMatrizAuditoria(dadosMatrizAuditoria); });
+
+  function renderizarMonitoramentoPorNucleo(lista) {
+    const grid = document.getElementById('gridMonitoramentoPorNucleo');
+    grid.innerHTML = '';
+    lista.forEach(function(n) {
+      const card = document.createElement('div');
+      card.className = 'nucleo-card';
+      const pct = n.percentualExecucao === 'DADO_INSUFICIENTE' ? 'N/D' : n.percentualExecucao + '%';
+      card.innerHTML =
+        '<div class="nome">' + escaparHtml(n.nomeNucleo) + '</div>' +
+        '<div>' + n.acoesConcluidas + '/' + n.totalAcoes + ' ações concluídas - execução ' + pct + '</div>' +
+        '<div class="situacao-texto">' + escaparHtml(rotuloCriticidade(n.criticidade)) + ' | Risco: ' + escaparHtml(rotuloRisco(n.risco)) + '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  document.getElementById('botaoAtualizarMonitoramento').addEventListener('click', async function() {
+    const botao = document.getElementById('botaoAtualizarMonitoramento');
+    botao.disabled = true; botao.textContent = 'Atualizando...';
+    try {
+      const resultado = await chamarApi('atualizarMonitoramento', [sessaoAtual.token]);
+      mostrarSucesso('Monitoramento atualizado em ' + new Date(resultado.dataAtualizacao).toLocaleString('pt-BR') + '.');
+      await carregarMonitoramento();
+    } catch (e) {
+      mostrarErro(e.message);
+    } finally {
+      botao.disabled = false; botao.textContent = 'Atualizar monitoramento';
+    }
+  });
+
+  async function abrirDrillDown(idIndicador) {
+    try {
+      const d = await chamarApi('obterDrillDownIndicador', [sessaoAtual.token, idIndicador]);
+      document.getElementById('tituloDrillDown').textContent = d.indicador.NOME_INDICADOR;
+      const corpo = document.getElementById('corpoModalDrillDown');
+      const pct = d.indicador.PERCENTUAL === 'DADO_INSUFICIENTE' ? 'N/D' : d.indicador.PERCENTUAL + '%';
+      corpo.innerHTML =
+        '<p><strong>Previsto:</strong> ' + escaparHtml(d.indicador.META_REFERENCIA) +
+        ' | <strong>Realizado:</strong> ' + escaparHtml(d.indicador.VALOR) +
+        ' | <strong>%:</strong> ' + pct + '</p>' +
+        '<p><strong>Diagnóstico:</strong> ' + escaparHtml(d.indicador.DIAGNOSTICO) + '</p>' +
+        '<p><strong>Recomendação:</strong> ' + escaparHtml(d.indicador.RECOMENDACAO) + '</p>' +
+        '<p><strong>Origem do dado:</strong> ' + escaparHtml(d.indicador.ORIGEM_DADO) + '</p>' +
+        '<hr><p><strong>' + d.acoesRelacionadas.length + '</strong> ação(ões) relacionada(s):</p>' +
+        d.acoesRelacionadas.map(function(a) {
+          const linkPasta = a.linkPastaDrive
+            ? '<a class="link-drive" href="' + a.linkPastaDrive + '" target="_blank" rel="noopener noreferrer">Abrir pasta</a>'
+            : 'Sem pasta';
+          const comp = a.completudeDocumental.percentualCompletude;
+          const compTexto = comp === 'DADO_INSUFICIENTE' ? 'N/D' : comp + '%';
+          return '<p>- ' + escaparHtml(a.idAcao) + ' (' + escaparHtml(a.status) + ') | Inscritos: ' + escaparHtml(a.inscritos) +
+            ' | Documentação: ' + compTexto + ' | ' + linkPasta + '</p>';
+        }).join('');
+      document.getElementById('modalDrillDown').style.display = 'flex';
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  }
+  document.getElementById('botaoFecharModalDrillDown').addEventListener('click', function() {
+    document.getElementById('modalDrillDown').style.display = 'none';
+  });
+
+  // ============================================================
+  // VISAO GERAL DO PROJETO
+  // ============================================================
+  async function carregarVisaoGeral() {
+    try {
+      const v = await chamarApi('obterVisaoGeralProjeto', [sessaoAtual.token]);
+      const nd = function(x) { return (x === 'DADO_NAO_DISPONIVEL' || x === undefined) ? 'Dado não disponível' : x; };
+
+      document.getElementById('tituloVisaoGeralProjeto').textContent = nd(v.identidade.nomeProjeto);
+      document.getElementById('subtituloVisaoGeralProjeto').textContent =
+        nd(v.identidade.instituicao) + ' | Período: ' + nd(v.identidade.dataInicio) + ' a ' + nd(v.identidade.dataFim) +
+        ' | Versão documental ativa: ' + nd(v.identidade.versaoDocumentalAtiva);
+
+      const cores = {
+        CRITICO: { bg: '#FCEBEB', cor: '#A32D2D', texto: 'CRÍTICO' },
+        ATENCAO: { bg: '#FFF8E1', cor: '#8A6D00', texto: 'ATENÇÃO' },
+        CONTROLADO: { bg: '#EAF3DE', cor: '#3B6D11', texto: 'CONTROLADO' }
+      };
+      const cs = cores[v.saudeGeralProjeto] || cores.CONTROLADO;
+      const blocoSaude = document.getElementById('blocoSaudeGeralVisaoGeral');
+      blocoSaude.style.background = cs.bg; blocoSaude.style.color = cs.cor;
+      blocoSaude.textContent = 'SAÚDE GERAL DO PROJETO: ' + cs.texto;
+
+      // Estrutura
+      document.getElementById('vgTotalNucleos').textContent = v.estrutura.totalNucleos;
+      document.getElementById('vgTotalModalidades').textContent = v.estrutura.totalModalidades;
+      document.getElementById('vgTurmasPrevistas').textContent = v.estrutura.turmasPrevistas;
+      document.getElementById('vgVagasPorTurma').textContent = nd(v.estrutura.vagasPrevistasPorTurma);
+      document.getElementById('vgListaNucleos').textContent =
+        v.estrutura.listaNucleos.map(function(n) { return n.nome + ' (' + nd(n.municipio) + ')'; }).join(', ');
+      document.getElementById('vgListaModalidades').textContent = v.estrutura.listaModalidades.join(', ');
+
+      // Metas
+      const corpoMetas = document.getElementById('corpoTabelaVgMetas');
+      corpoMetas.innerHTML = '';
+      v.metas.forEach(function(m) {
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + escaparHtml(m.indicador) + '</td>' +
+          '<td>' + escaparHtml(m.previsto) + '</td>' +
+          '<td>' + escaparHtml(m.realizado) + '</td>' +
+          '<td>' + escaparHtml(m.percentual === 'DADO_NAO_DISPONIVEL' ? 'N/D' : m.percentual + '%') + '</td>' +
+          '<td><span class="status-badge ' + classeCriticidade(m.classificacao) + '">' + escaparHtml(rotuloCriticidade(m.classificacao)) + '</span></td>' +
+          '<td>' + escaparHtml(rotuloRisco(m.risco)) + '</td>';
+        corpoMetas.appendChild(tr);
+      });
+
+      // Execucao
+      document.getElementById('vgAcoesCriadas').textContent = v.execucao.acoesCriadas;
+      document.getElementById('vgAcoesConcluidas').textContent = v.execucao.acoesConcluidas;
+      document.getElementById('vgAcoesEmExecucao').textContent = v.execucao.acoesEmExecucao;
+      document.getElementById('vgAcoesComPasta').textContent = v.execucao.acoesComPasta;
+      document.getElementById('vgParticipantesConcluidos').textContent = v.execucao.participantesConcluidos;
+      document.getElementById('vgCertificados').textContent = v.execucao.certificadosEmitidos;
+      document.getElementById('vgHorasRealizadas').textContent = v.execucao.horasRealizadas;
+      document.getElementById('vgAcoesSemPasta').textContent = v.execucao.acoesSemPasta;
+
+      // Documentacao
+      document.getElementById('vgEvidenciasCadastradas').textContent = v.documentacao.evidenciasCadastradas;
+      document.getElementById('vgEvidenciasValidadas').textContent = v.documentacao.evidenciasValidadas;
+      document.getElementById('vgDocCompleta').textContent = v.documentacao.acoesComDocumentacaoCompleta;
+      document.getElementById('vgDocIncompleta').textContent = v.documentacao.acoesComDocumentacaoIncompleta;
+      document.getElementById('vgDivergencias').textContent = v.documentacao.divergenciasAbertas;
+      document.getElementById('vgInconsistencias').textContent = v.documentacao.acoesComInconsistenciaIntegridade;
+      document.getElementById('vgPontosCriticos').textContent = v.quantidadePontosCriticos;
+      document.getElementById('vgPontosAtencao').textContent = v.quantidadePontosAtencao;
+
+      document.getElementById('vgUltimaAtualizacao').textContent =
+        v.ultimaAtualizacaoMonitoramento === 'DADO_NAO_DISPONIVEL'
+          ? 'O monitoramento ainda não foi calculado - vá em Monitoramento e clique em "Atualizar monitoramento".'
+          : new Date(v.ultimaAtualizacaoMonitoramento).toLocaleString('pt-BR');
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  }
 </script>
 </body>
 </html>
