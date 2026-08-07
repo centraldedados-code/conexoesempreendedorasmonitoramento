@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conexões Criativas - Instituto BR Arte</title>
+<style>
+  :root {
+    --azul-principal: #092040;
+    --azul-secundaria: #00B7D7;
+    --amarelo-acento: #ECC203;
+    --cinza-neutro: #EFF1F3;
+    --azul-escuro: #021738;
+    --branco: #FFFFFF;
+    --texto-secundario: #5F5E5A;
+    --borda: #B4B2A9;
+    --vermelho-erro: #A32D2D;
+    --fundo-erro: #FCEBEB;
+    --verde-sucesso: #3B6D11;
+    --fundo-sucesso: #EAF3DE;
+    --fonte-titulo: 'Montserrat', Arial, sans-serif;
+    --fonte-corpo: 'Open Sans', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--cinza-neutro); font-family: var(--fonte-corpo); color: var(--azul-escuro); }
+
+  #viewLogin { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--azul-principal); }
+  .cartao-login { background: var(--branco); width: 100%; max-width: 380px; padding: 48px 40px; border-radius: 4px; border: 1px solid var(--borda); }
+  .marca { text-align: left; margin-bottom: 40px; }
+  .marca .nome-projeto { font-family: var(--fonte-titulo); font-weight: 700; font-size: 20px; color: var(--azul-principal); letter-spacing: 0.5px; margin: 0; }
+  .marca .nome-instituicao { font-size: 13px; color: var(--texto-secundario); margin: 4px 0 0 0; }
+  .marca .linha { width: 32px; height: 3px; background: var(--azul-secundaria); margin-top: 16px; }
+  #viewLogin label { display: block; font-size: 13px; color: var(--azul-principal); font-weight: 600; margin-bottom: 6px; margin-top: 20px; }
+  #viewLogin input[type="text"], #viewLogin input[type="password"] { width: 100%; padding: 11px 12px; border: 1px solid var(--borda); border-radius: 3px; font-family: var(--fonte-corpo); font-size: 14px; color: var(--azul-escuro); background: var(--cinza-neutro); }
+  #viewLogin input:focus { outline: none; border-color: var(--azul-secundaria); background: var(--branco); }
+  #viewLogin button.entrar { width: 100%; margin-top: 28px; padding: 12px; background: var(--azul-principal); color: var(--branco); border: none; border-radius: 3px; font-weight: 600; font-size: 14px; cursor: pointer; }
+  #viewLogin button.entrar:hover { background: var(--azul-escuro); }
+  #viewLogin button.entrar:disabled { background: var(--borda); cursor: not-allowed; }
+  .rodape-login { margin-top: 32px; font-size: 12px; color: var(--texto-secundario); }
+
+  #viewApp { display: none; }
+  header.app-header { background: var(--azul-principal); color: var(--branco); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  header.app-header .titulo-area { padding: 16px 0; }
+  header.app-header .titulo { font-family: var(--fonte-titulo); font-size: 18px; }
+  header.app-header .titulo small { display: block; font-size: 12px; color: #C7D0DC; font-weight: 400; margin-top: 2px; }
+  header.app-header .usuario-area { display: flex; align-items: center; gap: 14px; font-size: 13px; }
+  header.app-header button.sair { background: transparent; border: 1px solid var(--branco); color: var(--branco); padding: 6px 14px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+  header.app-header button.sair:hover { background: rgba(255,255,255,0.1); }
+
+  nav.menu-principal { background: var(--azul-escuro); padding: 0 32px; display: flex; gap: 4px; }
+  nav.menu-principal button { background: transparent; border: none; color: #C7D0DC; padding: 12px 18px; font-family: var(--fonte-corpo); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
+  nav.menu-principal button.ativo { color: var(--branco); border-bottom-color: var(--azul-secundaria); }
+  nav.menu-principal button:hover { color: var(--branco); }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 24px 32px 80px; }
+  .painel-conteudo { display: none; }
+  .painel-conteudo.ativo { display: block; }
+
+  .cartoes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .cartao { background: var(--branco); border: 1px solid var(--borda); border-radius: 4px; padding: 16px; }
+  .cartao .valor { font-family: var(--fonte-titulo); font-size: 26px; font-weight: 700; color: var(--azul-principal); }
+  .cartao .rotulo { font-size: 12px; color: var(--texto-secundario); margin-top: 2px; }
+
+  section { background: var(--branco); border: 1px solid var(--borda); border-radius: 4px; padding: 20px; margin-bottom: 20px; }
+  section h2 { font-family: var(--fonte-titulo); font-size: 15px; margin: 0 0 6px 0; color: var(--azul-principal); }
+  section p.descricao-secao { font-size: 12px; color: var(--texto-secundario); margin: 0 0 14px 0; }
+
+  .nucleos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+  .nucleo-card { border: 1px solid var(--borda); border-radius: 3px; padding: 10px 12px; font-size: 13px; }
+  .nucleo-card .nome { font-weight: 600; margin-bottom: 4px; }
+  .barra-fundo { background: var(--cinza-neutro); border-radius: 2px; height: 6px; margin: 6px 0; overflow: hidden; }
+  .barra-preenchimento { height: 100%; background: var(--azul-secundaria); }
+  .barra-preenchimento.conforme { background: var(--verde-sucesso); }
+  .barra-preenchimento.acima { background: var(--amarelo-acento); }
+  .situacao-texto { font-size: 11px; color: var(--texto-secundario); }
+
+  .filtros { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .filtros select, .filtros input { padding: 7px 10px; border: 1px solid var(--borda); border-radius: 3px; font-family: var(--fonte-corpo); font-size: 13px; background: var(--branco); }
+  .filtros label.checkbox { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--texto-secundario); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 10px; background: var(--azul-principal); color: var(--branco); font-weight: 600; position: sticky; top: 0; }
+  td { padding: 7px 10px; border-bottom: 1px solid var(--cinza-neutro); }
+  tbody tr:hover { background: var(--cinza-neutro); }
+  .tabela-scroll { max-height: 480px; overflow-y: auto; border: 1px solid var(--borda); border-radius: 3px; }
+
+  select.select-nucleo { width: 100%; padding: 5px 8px; border: 1px solid var(--borda); border-radius: 3px; font-family: var(--fonte-corpo); font-size: 12px; }
+  select.select-nucleo.alterado { border-color: var(--azul-secundaria); background: #EAF7FA; }
+
+  .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .status-badge.aguardando { background: var(--fundo-erro); color: var(--vermelho-erro); }
+  .status-badge.alocada { background: var(--fundo-sucesso); color: var(--verde-sucesso); }
+  .status-badge.neutro { background: var(--cinza-neutro); color: var(--texto-secundario); }
+
+  .botao-tabela { background: var(--azul-principal); color: var(--branco); border: none; padding: 5px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .botao-tabela:hover { background: var(--azul-escuro); }
+  .botao-tabela.secundario { background: var(--branco); color: var(--azul-principal); border: 1px solid var(--azul-principal); }
+  a.link-drive { color: var(--azul-secundaria); font-size: 12px; font-weight: 600; text-decoration: none; }
+  a.link-drive:hover { text-decoration: underline; }
+
+  .rodape-acoes { position: sticky; bottom: 0; background: var(--branco); border-top: 1px solid var(--borda); padding: 14px 32px; display: flex; justify-content: flex-end; gap: 10px; }
+  button.primario { background: var(--azul-principal); color: var(--branco); border: none; padding: 10px 18px; border-radius: 3px; font-weight: 600; font-size: 13px; cursor: pointer; }
+  button.primario:hover { background: var(--azul-escuro); }
+  button.secundario { background: var(--branco); color: var(--azul-principal); border: 1px solid var(--azul-principal); padding: 10px 18px; border-radius: 3px; font-weight: 600; font-size: 13px; cursor: pointer; }
+  button:disabled { background: var(--borda); color: var(--branco); cursor: not-allowed; }
+
+  .mensagem { padding: 10px 14px; border-radius: 3px; font-size: 13px; margin-bottom: 14px; display: none; }
+  .mensagem.erro { background: var(--fundo-erro); border: 1px solid var(--vermelho-erro); color: var(--vermelho-erro); }
+  .mensagem.sucesso { background: var(--fundo-sucesso); border: 1px solid var(--verde-sucesso); color: var(--verde-sucesso); }
+
+  .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(2,23,56,0.5); align-items: center; justify-content: center; z-index: 10; }
+  .modal { background: var(--branco); border-radius: 4px; padding: 24px; max-width: 420px; width: 90%; }
+  .modal h3 { font-family: var(--fonte-titulo); margin: 0 0 10px 0; color: var(--azul-principal); }
+  .modal .acoes-modal { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+</style>
+</head>
+<body>
+
+<div id="viewLogin">
+  <div class="cartao-login">
+    <div class="marca">
+      <p class="nome-projeto">CONEXÕES CRIATIVAS</p>
+      <p class="nome-instituicao">Instituto BR Arte</p>
+      <div class="linha"></div>
+    </div>
+    <form id="formLogin">
+      <label for="campoUsuario">Usuário</label>
+      <input type="text" id="campoUsuario" autocomplete="username" required>
+      <label for="campoSenha">Senha</label>
+      <input type="password" id="campoSenha" autocomplete="current-password" required>
+      <button type="submit" class="entrar" id="botaoEntrar">ENTRAR</button>
+      <div class="mensagem erro" id="mensagemErroLogin"></div>
+    </form>
+    <div class="rodape-login">Central de Monitoramento e Gestão do Projeto</div>
+  </div>
+</div>
+
+<div id="viewApp">
+  <header class="app-header">
+    <div class="titulo-area">
+      <div class="titulo" id="tituloTela">ALOCAÇÃO TERRITORIAL<small id="subtituloTela">Distribuição das 216 turmas entre os 12 núcleos</small></div>
+    </div>
+    <div class="usuario-area">
+      <span id="rotuloUsuarioLogado"></span>
+      <button class="sair" id="botaoSair">SAIR</button>
+    </div>
+  </header>
+
+  <nav class="menu-principal">
+    <button id="menuAlocacao" class="ativo">Alocação Territorial</button>
+    <button id="menuGestaoAcoes">Gestão de Ações</button>
+  </nav>
+
+  <main>
+    <div class="mensagem erro" id="mensagemErro"></div>
+    <div class="mensagem sucesso" id="mensagemSucesso"></div>
+
+    <!-- ===== PAINEL: ALOCACAO TERRITORIAL ===== -->
+    <div class="painel-conteudo ativo" id="painelAlocacao">
+      <div class="cartoes">
+        <div class="cartao"><div class="valor" id="valorTotalTurmas">-</div><div class="rotulo">turmas previstas</div></div>
+        <div class="cartao"><div class="valor" id="valorAlocadas">-</div><div class="rotulo">alocadas</div></div>
+        <div class="cartao"><div class="valor" id="valorAguardando">-</div><div class="rotulo">aguardando alocação</div></div>
+        <div class="cartao"><div class="valor" id="valorVagas">-</div><div class="rotulo">vagas previstas</div></div>
+      </div>
+
+      <section>
+        <h2>Progresso por núcleo</h2>
+        <p class="descricao-secao">Referência de distribuição territorial: 18 turmas / 360 vagas por núcleo. Não é uma regra automática.</p>
+        <div class="nucleos-grid" id="nucleosGrid"></div>
+      </section>
+
+      <section>
+        <h2>Turmas programadas</h2>
+        <p class="descricao-secao">Escolha o núcleo de cada turma e salve as alterações. Turmas já alocadas podem ser realocadas, mas não podem voltar a "a preencher".</p>
+        <div class="filtros">
+          <select id="filtroNucleo"><option value="">Núcleo (todos)</option></select>
+          <select id="filtroModalidade"><option value="">Modalidade (todas)</option></select>
+          <select id="filtroStatus">
+            <option value="">Situação (todas)</option>
+            <option value="AGUARDANDO_ALOCACAO">Aguardando alocação</option>
+            <option value="ALOCADA">Alocada</option>
+          </select>
+          <input type="text" id="filtroTurma" placeholder="Turma (ex: T01)">
+          <input type="text" id="filtroIdProgramacao" placeholder="ID da programação">
+          <label class="checkbox"><input type="checkbox" id="filtroSomenteNaoAlocadas"> Somente não alocadas</label>
+        </div>
+        <div class="tabela-scroll">
+          <table>
+            <thead><tr><th>ID</th><th>Modalidade</th><th>Turma</th><th>Vagas</th><th>Núcleo</th><th>Situação</th></tr></thead>
+            <tbody id="corpoTabela"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== PAINEL: GESTAO DE ACOES ===== -->
+    <div class="painel-conteudo" id="painelGestaoAcoes">
+      <div class="cartoes">
+        <div class="cartao"><div class="valor" id="valorAguardandoAcao">-</div><div class="rotulo">alocadas aguardando criação de ação</div></div>
+        <div class="cartao"><div class="valor" id="valorAcoesCriadas">-</div><div class="rotulo">ações criadas</div></div>
+        <div class="cartao"><div class="valor" id="valorAcoesSemPasta">-</div><div class="rotulo">ações sem pasta no Drive</div></div>
+        <div class="cartao"><div class="valor" id="valorAcoesComPasta">-</div><div class="rotulo">ações com pasta no Drive</div></div>
+      </div>
+
+      <section>
+        <h2>Programações alocadas aguardando criação de ação</h2>
+        <p class="descricao-secao">Cada turma já possui núcleo definido. Criar a ação é uma decisão explícita, uma turma de cada vez - nada é convertido automaticamente.</p>
+        <div class="tabela-scroll">
+          <table>
+            <thead><tr><th>ID da programação</th><th>Modalidade</th><th>Turma</th><th>Núcleo</th><th></th></tr></thead>
+            <tbody id="corpoTabelaAguardandoAcao"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Ações criadas</h2>
+        <p class="descricao-secao">A pasta da turma só é criada quando você clicar em "Criar pasta" - nunca automaticamente.</p>
+        <div class="tabela-scroll">
+          <table>
+            <thead><tr><th>ID da ação</th><th>Modalidade</th><th>Turma</th><th>Núcleo</th><th>Situação</th><th>Pasta no Drive</th></tr></thead>
+            <tbody id="corpoTabelaAcoes"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="rodape-acoes" id="rodapeAlocacao">
+    <button class="secundario" id="botaoValidar">Validar distribuição</button>
+    <button class="primario" id="botaoSalvar" disabled>Salvar alocações (0)</button>
+  </div>
+</div>
+
+<div class="modal-fundo" id="modalConfirmacao">
+  <div class="modal">
+    <h3>Confirmar alterações</h3>
+    <p id="textoModalConfirmacao"></p>
+    <div class="acoes-modal">
+      <button class="secundario" id="botaoCancelarModal">Cancelar</button>
+      <button class="primario" id="botaoConfirmarModal">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-fundo" id="modalValidacao">
+  <div class="modal" style="max-width: 640px;">
+    <h3>Relatório de validação da distribuição</h3>
+    <div id="corpoModalValidacao" style="font-size: 13px; max-height: 400px; overflow-y: auto;"></div>
+    <div class="acoes-modal"><button class="primario" id="botaoFecharModalValidacao">Fechar</button></div>
+  </div>
+</div>
+
+<div class="modal-fundo" id="modalConfirmacaoGenerica">
+  <div class="modal">
+    <h3 id="tituloModalGenerico">Confirmar</h3>
+    <p id="textoModalGenerico"></p>
+    <div class="acoes-modal">
+      <button class="secundario" id="botaoCancelarModalGenerico">Cancelar</button>
+      <button class="primario" id="botaoConfirmarModalGenerico">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!--
+  NENHUM SEGREDO NESTE ARQUIVO. URL_BACKEND e publica (termina em /exec).
+  Token de sessao so em memoria (variavel sessaoAtual) - nunca em
+  localStorage, sessionStorage ou cookie. Login e todas as telas do
+  sistema vivem neste unico arquivo (SPA) para que essa variavel possa
+  ser compartilhada entre elas sem precisar persistir o token em lugar
+  nenhum do navegador.
+-->
+<script>
+  const URL_BACKEND = 'https://script.google.com/macros/s/AKfycbw8o6TeH7_1UpiYF_QaGclzOQrt8mlY60tVGzur63PSs_frMuHlgrEIg3oayRVDfvQP/exec';
+  let sessaoAtual = null;
+
+  if (URL_BACKEND.indexOf('COLE_AQUI') !== -1) {
+    document.addEventListener('DOMContentLoaded', function() {
+      const aviso = document.createElement('div');
+      aviso.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#A32D2D;color:#fff;text-align:center;padding:10px;font-family:sans-serif;font-size:13px;z-index:999;';
+      aviso.textContent = 'ATENÇÃO: URL_BACKEND ainda está com o valor de exemplo. Substitua pela URL real do Web App (/exec) antes de publicar.';
+      document.body.prepend(aviso);
+    });
+  }
+
+  async function chamarApi(comando, argumentos) {
+    const resposta = await fetch(URL_BACKEND, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ comando: comando, argumentos: argumentos || [] })
+    });
+    if (!resposta.ok) throw new Error('Não foi possível contatar o servidor.');
+    const corpo = await resposta.json();
+    if (!corpo.sucesso) throw new Error(corpo.erro || 'Não foi possível concluir esta operação.');
+    return corpo.dados;
+  }
+
+  function escaparHtml(texto) {
+    const div = document.createElement('div');
+    div.textContent = (texto === undefined || texto === null) ? '' : String(texto);
+    return div.innerHTML;
+  }
+
+  function mostrarErro(msg) {
+    const el = document.getElementById('mensagemErro');
+    el.textContent = msg; el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 6000);
+  }
+  function mostrarSucesso(msg) {
+    const el = document.getElementById('mensagemSucesso');
+    el.textContent = msg; el.style.display = 'block';
+    setTimeout(function() { el.style.display = 'none'; }, 6000);
+  }
+
+  // ---------------- LOGIN ----------------
+  const formulario = document.getElementById('formLogin');
+  const botaoEntrar = document.getElementById('botaoEntrar');
+  const mensagemErroLogin = document.getElementById('mensagemErroLogin');
+
+  formulario.addEventListener('submit', async function(evento) {
+    evento.preventDefault();
+    mensagemErroLogin.style.display = 'none';
+    botaoEntrar.disabled = true;
+    botaoEntrar.textContent = 'ENTRANDO...';
+
+    const usuario = document.getElementById('campoUsuario').value;
+    const senha = document.getElementById('campoSenha').value;
+
+    try {
+      const resultado = await chamarApi('login', [usuario, senha]);
+      sessaoAtual = resultado;
+      document.getElementById('rotuloUsuarioLogado').textContent = resultado.login + ' (' + resultado.perfil + ')';
+      document.getElementById('viewLogin').style.display = 'none';
+      document.getElementById('viewApp').style.display = 'block';
+      await carregarDadosAlocacao();
+    } catch (erro) {
+      mensagemErroLogin.textContent = erro.message;
+      mensagemErroLogin.style.display = 'block';
+    } finally {
+      botaoEntrar.disabled = false;
+      botaoEntrar.textContent = 'ENTRAR';
+    }
+  });
+
+  document.getElementById('botaoSair').addEventListener('click', async function() {
+    try {
+      if (sessaoAtual) await chamarApi('logout', [sessaoAtual.token]);
+    } catch (e) { /* logout com falha no backend nao deve travar o usuario */ }
+    sessaoAtual = null;
+    dadosProgramacao = []; dadosNucleos = []; alteracoesPendentes = {};
+    dadosProgramacoesAguardandoAcao = []; dadosAcoes = [];
+    document.getElementById('viewApp').style.display = 'none';
+    document.getElementById('viewLogin').style.display = 'flex';
+    document.getElementById('campoUsuario').value = '';
+    document.getElementById('campoSenha').value = '';
+  });
+
+  // ---------------- NAVEGACAO ENTRE TELAS ----------------
+  const menuAlocacao = document.getElementById('menuAlocacao');
+  const menuGestaoAcoes = document.getElementById('menuGestaoAcoes');
+  const painelAlocacao = document.getElementById('painelAlocacao');
+  const painelGestaoAcoes = document.getElementById('painelGestaoAcoes');
+  const rodapeAlocacao = document.getElementById('rodapeAlocacao');
+
+  menuAlocacao.addEventListener('click', function() {
+    menuAlocacao.classList.add('ativo'); menuGestaoAcoes.classList.remove('ativo');
+    painelAlocacao.classList.add('ativo'); painelGestaoAcoes.classList.remove('ativo');
+    rodapeAlocacao.style.display = 'flex';
+    document.getElementById('tituloTela').firstChild.textContent = 'ALOCAÇÃO TERRITORIAL';
+    document.getElementById('subtituloTela').textContent = 'Distribuição das 216 turmas entre os 12 núcleos';
+  });
+
+  menuGestaoAcoes.addEventListener('click', async function() {
+    menuGestaoAcoes.classList.add('ativo'); menuAlocacao.classList.remove('ativo');
+    painelGestaoAcoes.classList.add('ativo'); painelAlocacao.classList.remove('ativo');
+    rodapeAlocacao.style.display = 'none';
+    document.getElementById('tituloTela').firstChild.textContent = 'GESTÃO DE AÇÕES';
+    document.getElementById('subtituloTela').textContent = 'Transformar programações alocadas em ações e criar as pastas no Drive';
+    await carregarDadosGestaoAcoes();
+  });
+
+  // ============================================================
+  // ALOCACAO TERRITORIAL
+  // ============================================================
+  let dadosProgramacao = [];
+  let dadosNucleos = [];
+  let alteracoesPendentes = {};
+
+  async function carregarDadosAlocacao() {
+    try {
+      dadosNucleos = await chamarApi('listarNucleos', [sessaoAtual.token]);
+      dadosProgramacao = await chamarApi('listarProgramacao', [sessaoAtual.token, null]);
+      popularFiltros();
+      renderizarTudo();
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  }
+
+  function popularFiltros() {
+    const selNucleo = document.getElementById('filtroNucleo');
+    const valorAnteriorNucleo = selNucleo.value;
+    while (selNucleo.options.length > 1) selNucleo.remove(1);
+    dadosNucleos.forEach(function(n) {
+      const opt = document.createElement('option');
+      opt.value = n.ID_NUCLEO; opt.textContent = n.NOME_NUCLEO;
+      selNucleo.appendChild(opt);
+    });
+    if (Array.from(selNucleo.options).some(function(o) { return o.value === valorAnteriorNucleo; })) {
+      selNucleo.value = valorAnteriorNucleo;
+    }
+
+    const selMod = document.getElementById('filtroModalidade');
+    const valorAnteriorMod = selMod.value;
+    while (selMod.options.length > 1) selMod.remove(1);
+    const modalidades = Array.from(new Set(dadosProgramacao.map(function(p) { return p.NOME_MODALIDADE; })));
+    modalidades.forEach(function(m) {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m;
+      selMod.appendChild(opt);
+    });
+    if (Array.from(selMod.options).some(function(o) { return o.value === valorAnteriorMod; })) {
+      selMod.value = valorAnteriorMod;
+    }
+  }
+
+  function nucleoEfetivo(linha) {
+    return alteracoesPendentes.hasOwnProperty(linha.ID_PROGRAMACAO)
+      ? alteracoesPendentes[linha.ID_PROGRAMACAO] : linha.ID_NUCLEO;
+  }
+
+  function renderizarTudo() {
+    renderizarCartoes();
+    renderizarNucleos();
+    renderizarTabela();
+    atualizarBotaoSalvar();
+  }
+
+  function renderizarCartoes() {
+    const total = dadosProgramacao.length;
+    const alocadas = dadosProgramacao.filter(function(p) { return !!nucleoEfetivo(p); }).length;
+    const vagas = dadosProgramacao.reduce(function(s, p) { return s + (Number(p.VAGAS_PREVISTAS) || 0); }, 0);
+    document.getElementById('valorTotalTurmas').textContent = total;
+    document.getElementById('valorAlocadas').textContent = alocadas;
+    document.getElementById('valorAguardando').textContent = total - alocadas;
+    document.getElementById('valorVagas').textContent = vagas.toLocaleString('pt-BR');
+  }
+
+  function renderizarNucleos() {
+    const grid = document.getElementById('nucleosGrid');
+    grid.innerHTML = '';
+    const REFERENCIA_TURMAS = 18, REFERENCIA_VAGAS = 360;
+
+    dadosNucleos.forEach(function(n) {
+      const turmasDoNucleo = dadosProgramacao.filter(function(p) { return nucleoEfetivo(p) === n.ID_NUCLEO; });
+      const totalTurmas = turmasDoNucleo.length;
+      const totalVagas = turmasDoNucleo.reduce(function(s, p) { return s + (Number(p.VAGAS_PREVISTAS) || 0); }, 0);
+      const pct = Math.min(100, (totalTurmas / REFERENCIA_TURMAS) * 100);
+      const classeCor = totalTurmas === REFERENCIA_TURMAS ? 'conforme' : (totalTurmas > REFERENCIA_TURMAS ? 'acima' : '');
+      const situacaoTexto = totalTurmas === REFERENCIA_TURMAS ? 'Conforme a referência' :
+        (totalTurmas > REFERENCIA_TURMAS ? 'Acima da referência (+' + (totalTurmas - REFERENCIA_TURMAS) + ')' :
+        'Abaixo da referência (-' + (REFERENCIA_TURMAS - totalTurmas) + ')');
+
+      const card = document.createElement('div');
+      card.className = 'nucleo-card';
+      card.innerHTML =
+        '<div class="nome">' + escaparHtml(n.NOME_NUCLEO) + '</div>' +
+        '<div>' + totalTurmas + '/' + REFERENCIA_TURMAS + ' turmas - ' + totalVagas + '/' + REFERENCIA_VAGAS + ' vagas</div>' +
+        '<div class="barra-fundo"><div class="barra-preenchimento ' + classeCor + '" style="width:' + pct + '%"></div></div>' +
+        '<div class="situacao-texto">' + escaparHtml(situacaoTexto) + '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  function linhasFiltradas() {
+    const fNucleo = document.getElementById('filtroNucleo').value;
+    const fModalidade = document.getElementById('filtroModalidade').value;
+    const fStatus = document.getElementById('filtroStatus').value;
+    const fTurma = document.getElementById('filtroTurma').value.trim().toUpperCase();
+    const fIdProg = document.getElementById('filtroIdProgramacao').value.trim().toUpperCase();
+    const fSomenteNaoAlocadas = document.getElementById('filtroSomenteNaoAlocadas').checked;
+
+    return dadosProgramacao.filter(function(p) {
+      const nucleoAtual = nucleoEfetivo(p);
+      if (fNucleo && nucleoAtual !== fNucleo) return false;
+      if (fModalidade && p.NOME_MODALIDADE !== fModalidade) return false;
+      if (fStatus === 'ALOCADA' && !nucleoAtual) return false;
+      if (fStatus === 'AGUARDANDO_ALOCACAO' && nucleoAtual) return false;
+      if (fTurma && p.TURMA.toUpperCase().indexOf(fTurma) === -1) return false;
+      if (fIdProg && p.ID_PROGRAMACAO.toUpperCase().indexOf(fIdProg) === -1) return false;
+      if (fSomenteNaoAlocadas && nucleoAtual) return false;
+      return true;
+    });
+  }
+
+  function renderizarTabela() {
+    const corpo = document.getElementById('corpoTabela');
+    corpo.innerHTML = '';
+    const linhas = linhasFiltradas();
+
+    linhas.forEach(function(p) {
+      const tr = document.createElement('tr');
+      const nucleoAtual = nucleoEfetivo(p);
+      const alterado = alteracoesPendentes.hasOwnProperty(p.ID_PROGRAMACAO);
+      const permiteVazio = !p.ID_NUCLEO;
+
+      const selectHtml = document.createElement('select');
+      selectHtml.className = 'select-nucleo' + (alterado ? ' alterado' : '');
+      selectHtml.innerHTML =
+        (permiteVazio ? '<option value="">A preencher</option>' : '') +
+        dadosNucleos.map(function(n) {
+          return '<option value="' + escaparHtml(n.ID_NUCLEO) + '"' + (n.ID_NUCLEO === nucleoAtual ? ' selected' : '') + '>' + escaparHtml(n.NOME_NUCLEO) + '</option>';
+        }).join('');
+
+      selectHtml.addEventListener('change', function() {
+        const novoValor = selectHtml.value;
+        if (novoValor === (p.ID_NUCLEO || '')) {
+          delete alteracoesPendentes[p.ID_PROGRAMACAO];
+        } else {
+          alteracoesPendentes[p.ID_PROGRAMACAO] = novoValor;
+        }
+        renderizarTudo();
+      });
+
+      const statusBadge = nucleoAtual
+        ? '<span class="status-badge alocada">ALOCADA</span>'
+        : '<span class="status-badge aguardando">AGUARDANDO</span>';
+
+      tr.innerHTML =
+        '<td>' + escaparHtml(p.ID_PROGRAMACAO) + '</td>' +
+        '<td>' + escaparHtml(p.NOME_MODALIDADE) + '</td>' +
+        '<td>' + escaparHtml(p.TURMA) + '</td>' +
+        '<td>' + escaparHtml(p.VAGAS_PREVISTAS) + '</td>' +
+        '<td class="celula-nucleo"></td>' +
+        '<td>' + statusBadge + '</td>';
+      tr.querySelector('.celula-nucleo').appendChild(selectHtml);
+
+      corpo.appendChild(tr);
+    });
+  }
+
+  function atualizarBotaoSalvar() {
+    const qtd = Object.keys(alteracoesPendentes).length;
+    const botao = document.getElementById('botaoSalvar');
+    botao.textContent = 'Salvar alocações (' + qtd + ')';
+    botao.disabled = qtd === 0;
+  }
+
+  ['filtroNucleo', 'filtroModalidade', 'filtroStatus', 'filtroTurma', 'filtroIdProgramacao', 'filtroSomenteNaoAlocadas']
+    .forEach(function(id) {
+      document.getElementById(id).addEventListener('input', renderizarTabela);
+      document.getElementById(id).addEventListener('change', renderizarTabela);
+    });
+
+  document.getElementById('botaoSalvar').addEventListener('click', function() {
+    const qtd = Object.keys(alteracoesPendentes).length;
+    if (qtd === 0) return;
+    document.getElementById('textoModalConfirmacao').textContent = qtd + ' alteração(ões) será(ão) salva(s). Deseja confirmar?';
+    document.getElementById('modalConfirmacao').style.display = 'flex';
+  });
+
+  document.getElementById('botaoCancelarModal').addEventListener('click', function() {
+    document.getElementById('modalConfirmacao').style.display = 'none';
+  });
+
+  document.getElementById('botaoConfirmarModal').addEventListener('click', async function() {
+    document.getElementById('modalConfirmacao').style.display = 'none';
+    const lote = Object.keys(alteracoesPendentes).map(function(idProgramacao) {
+      return { idProgramacao: idProgramacao, idNucleo: alteracoesPendentes[idProgramacao] };
+    }).filter(function(item) { return item.idNucleo; });
+
+    if (lote.length === 0) { mostrarErro('Nenhuma alocação válida para salvar.'); return; }
+
+    try {
+      const resultado = await chamarApi('salvarAlocacoes', [sessaoAtual.token, lote]);
+      mostrarSucesso(resultado.totalSalvo + ' turma(s) alocada(s) com sucesso.');
+      alteracoesPendentes = {};
+      await carregarDadosAlocacao();
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  });
+
+  document.getElementById('botaoValidar').addEventListener('click', async function() {
+    try {
+      const d = await chamarApi('validarDistribuicaoTerritorial', [sessaoAtual.token]);
+      const corpo = document.getElementById('corpoModalValidacao');
+
+      let htmlFinal = '<hr><p style="font-weight:600;color:' + (d.distribuicaoFinalConforme ? '#3B6D11' : '#A32D2D') + ';">' +
+        'DISTRIBUIÇÃO FINAL: ' + (d.distribuicaoFinalConforme ? 'CONFORME' : 'NÃO CONFORME') + '</p>';
+      if (!d.distribuicaoFinalConforme && d.nucleosForaDaReferencia && d.nucleosForaDaReferencia.length > 0) {
+        htmlFinal += '<p>Núcleos fora da referência (18/360):</p>' +
+          d.nucleosForaDaReferencia.map(function(n) {
+            return '<p>- ' + escaparHtml(n.nomeNucleo) + ': ' + n.turmasAlocadas + '/' + n.turmasReferencia +
+              ' turmas (' + (n.diferenca > 0 ? '+' : '') + n.diferenca + ') - ' + escaparHtml(n.situacao) + '</p>';
+          }).join('');
+      }
+
+      let htmlInconsistencias = '';
+      if (d.consistencia && !d.consistencia.ok) {
+        htmlInconsistencias = '<hr><p style="color:#A32D2D;font-weight:600;">INCONSISTÊNCIA DE ALOCAÇÃO - ' +
+          d.consistencia.totalInconsistencias + ' encontrada(s):</p>' +
+          d.consistencia.inconsistencias.map(function(inc) {
+            return '<p style="color:#A32D2D;">[' + escaparHtml(inc.tipo) + '] ' + escaparHtml(inc.idProgramacao) +
+              ': ' + escaparHtml(inc.detalhe) + '</p>';
+          }).join('');
+      } else if (d.consistencia && d.consistencia.ok) {
+        htmlInconsistencias = '<hr><p style="color:#3B6D11;">Nenhuma inconsistência de alocação encontrada.</p>';
+      }
+
+      corpo.innerHTML =
+        '<p><strong>' + d.totalTurmas + '</strong> turmas totais (esperado 216) | ' +
+        '<strong>' + d.totalVagas + '</strong> vagas (esperado 4.320) | ' +
+        '<strong>' + d.totalNucleos + '</strong> núcleos (esperado 12)</p>' +
+        '<p>Referência: ' + d.turmasReferenciaPorNucleo + ' turmas / ' + d.vagasReferenciaPorNucleo + ' vagas por núcleo</p>' +
+        '<p>Alocadas: ' + d.totalTurmasAlocadas + ' | Aguardando: ' + d.totalTurmasAguardando + '</p>' +
+        '<p>Núcleos abaixo da referência: ' + d.nucleosAbaixoDaReferencia +
+        ' | conforme: ' + d.nucleosConformeReferencia +
+        ' | acima: ' + d.nucleosAcimaDaReferencia + '</p>' +
+        '<hr>' +
+        d.porNucleo.map(function(n) {
+          return '<p>' + escaparHtml(n.nomeNucleo) + ': ' + n.turmasAlocadas + '/' + n.turmasReferencia + ' turmas, ' +
+            n.vagasAlocadas + '/' + n.vagasReferencia + ' vagas - ' + escaparHtml(n.situacao) + '</p>';
+        }).join('') +
+        htmlFinal + htmlInconsistencias;
+      document.getElementById('modalValidacao').style.display = 'flex';
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  });
+
+  document.getElementById('botaoFecharModalValidacao').addEventListener('click', function() {
+    document.getElementById('modalValidacao').style.display = 'none';
+  });
+
+  // ============================================================
+  // GESTAO DE ACOES + INTEGRACAO COM O DRIVE
+  // ============================================================
+  let dadosProgramacoesAguardandoAcao = [];
+  let dadosAcoes = [];
+
+  async function carregarDadosGestaoAcoes() {
+    try {
+      dadosProgramacoesAguardandoAcao = await chamarApi('listarProgramacoesAlocadas', [sessaoAtual.token]);
+      dadosAcoes = await chamarApi('listarAcoes', [sessaoAtual.token]);
+      renderizarGestaoAcoes();
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  }
+
+  function renderizarGestaoAcoes() {
+    document.getElementById('valorAguardandoAcao').textContent = dadosProgramacoesAguardandoAcao.length;
+    document.getElementById('valorAcoesCriadas').textContent = dadosAcoes.length;
+    const semPasta = dadosAcoes.filter(function(a) { return !a.FOLDER_ID; }).length;
+    document.getElementById('valorAcoesSemPasta').textContent = semPasta;
+    document.getElementById('valorAcoesComPasta').textContent = dadosAcoes.length - semPasta;
+
+    const corpoAguardando = document.getElementById('corpoTabelaAguardandoAcao');
+    corpoAguardando.innerHTML = '';
+    dadosProgramacoesAguardandoAcao.forEach(function(p) {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + escaparHtml(p.ID_PROGRAMACAO) + '</td>' +
+        '<td>' + escaparHtml(p.NOME_MODALIDADE) + '</td>' +
+        '<td>' + escaparHtml(p.TURMA) + '</td>' +
+        '<td>' + escaparHtml(p.NUCLEO) + '</td>' +
+        '<td></td>';
+      const botao = document.createElement('button');
+      botao.className = 'botao-tabela';
+      botao.textContent = 'Criar ação';
+      botao.addEventListener('click', function() { confirmarCriarAcao(p); });
+      tr.lastElementChild.appendChild(botao);
+      corpoAguardando.appendChild(tr);
+    });
+
+    const corpoAcoes = document.getElementById('corpoTabelaAcoes');
+    corpoAcoes.innerHTML = '';
+    dadosAcoes.forEach(function(a) {
+      const tr = document.createElement('tr');
+      const situacaoBadge = '<span class="status-badge neutro">' + escaparHtml(a.STATUS) + '</span>';
+      tr.innerHTML =
+        '<td>' + escaparHtml(a.ID_ACAO) + '</td>' +
+        '<td>' + escaparHtml(a.NOME_MODALIDADE) + '</td>' +
+        '<td>' + escaparHtml(a.NUMERO_TURMA) + '</td>' +
+        '<td>' + escaparHtml(a.NOME_NUCLEO) + '</td>' +
+        '<td>' + situacaoBadge + '</td>' +
+        '<td></td>';
+      const celulaPasta = tr.lastElementChild;
+      if (a.FOLDER_ID && a.LINK_PASTA_DRIVE) {
+        const link = document.createElement('a');
+        link.className = 'link-drive';
+        link.href = a.LINK_PASTA_DRIVE;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Abrir pasta';
+        celulaPasta.appendChild(link);
+      } else {
+        const botao = document.createElement('button');
+        botao.className = 'botao-tabela secundario';
+        botao.textContent = 'Criar pasta';
+        botao.addEventListener('click', function() { confirmarCriarPasta(a); });
+        celulaPasta.appendChild(botao);
+      }
+      corpoAcoes.appendChild(tr);
+    });
+  }
+
+  let acaoConfirmacaoPendente = null;
+
+  function confirmarCriarAcao(programacao) {
+    acaoConfirmacaoPendente = { tipo: 'criarAcao', dados: programacao };
+    document.getElementById('tituloModalGenerico').textContent = 'Criar ação';
+    document.getElementById('textoModalGenerico').textContent =
+      'Confirma a criação da ação para a turma ' + programacao.TURMA + ' de ' + programacao.NOME_MODALIDADE +
+      ' no núcleo ' + programacao.NUCLEO + '? Esta operação não cria a pasta no Drive automaticamente.';
+    document.getElementById('modalConfirmacaoGenerica').style.display = 'flex';
+  }
+
+  function confirmarCriarPasta(acao) {
+    acaoConfirmacaoPendente = { tipo: 'criarPasta', dados: acao };
+    document.getElementById('tituloModalGenerico').textContent = 'Criar pasta no Drive';
+    document.getElementById('textoModalGenerico').textContent =
+      'Confirma a criação da pasta da turma ' + acao.NUMERO_TURMA + ' (' + acao.NOME_MODALIDADE +
+      ') dentro do núcleo ' + acao.NOME_NUCLEO + '?';
+    document.getElementById('modalConfirmacaoGenerica').style.display = 'flex';
+  }
+
+  document.getElementById('botaoCancelarModalGenerico').addEventListener('click', function() {
+    acaoConfirmacaoPendente = null;
+    document.getElementById('modalConfirmacaoGenerica').style.display = 'none';
+  });
+
+  document.getElementById('botaoConfirmarModalGenerico').addEventListener('click', async function() {
+    document.getElementById('modalConfirmacaoGenerica').style.display = 'none';
+    if (!acaoConfirmacaoPendente) return;
+
+    try {
+      if (acaoConfirmacaoPendente.tipo === 'criarAcao') {
+        const idProgramacao = acaoConfirmacaoPendente.dados.ID_PROGRAMACAO;
+        const resultado = await chamarApi('criarAcaoAPartirDaProgramacao', [sessaoAtual.token, idProgramacao]);
+        mostrarSucesso('Ação ' + resultado.idAcao + ' criada com sucesso.');
+      } else if (acaoConfirmacaoPendente.tipo === 'criarPasta') {
+        const idAcao = acaoConfirmacaoPendente.dados.ID_ACAO;
+        await chamarApi('criarPastaAcaoComando', [sessaoAtual.token, idAcao]);
+        mostrarSucesso('Pasta da ação ' + idAcao + ' criada com sucesso.');
+      }
+      acaoConfirmacaoPendente = null;
+      await carregarDadosGestaoAcoes();
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  });
+</script>
+</body>
+</html>
