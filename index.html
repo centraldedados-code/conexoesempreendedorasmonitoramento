@@ -4,123 +4,185 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Conexões Criativas - Instituto BR Arte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+  /* ================================================================
+     Padrão visual institucional BR Arte / Prospera (aplicado 08/08/2026)
+     Camada puramente visual — nenhum seletor funcional (#id usado por
+     JS, .ativo, .celula-nucleo, data-*) foi renomeado ou removido.
+     ================================================================ */
   :root {
     --azul-principal: #092040;
     --azul-secundaria: #00B7D7;
     --amarelo-acento: #ECC203;
     --cinza-neutro: #EFF1F3;
     --azul-escuro: #021738;
+    --azul-header: #071A33;
     --branco: #FFFFFF;
-    --texto-secundario: #5F5E5A;
-    --borda: #B4B2A9;
+    --texto-secundario: #6C7A8E;
+    --borda: #D7DCE3;
     --vermelho-erro: #A32D2D;
     --fundo-erro: #FCEBEB;
     --verde-sucesso: #3B6D11;
     --fundo-sucesso: #EAF3DE;
     --fonte-titulo: 'Montserrat', Arial, sans-serif;
     --fonte-corpo: 'Open Sans', Arial, sans-serif;
+    --sombra-cartao: 0 1px 3px rgba(9,32,64,0.08);
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--cinza-neutro); font-family: var(--fonte-corpo); color: var(--azul-escuro); }
 
-  #viewLogin { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--azul-principal); }
-  .cartao-login { background: var(--branco); width: 100%; max-width: 380px; padding: 48px 40px; border-radius: 4px; border: 1px solid var(--borda); }
-  .marca { text-align: left; margin-bottom: 40px; }
-  .marca .nome-projeto { font-family: var(--fonte-titulo); font-weight: 700; font-size: 20px; color: var(--azul-principal); letter-spacing: 0.5px; margin: 0; }
-  .marca .nome-instituicao { font-size: 13px; color: var(--texto-secundario); margin: 4px 0 0 0; }
-  .marca .linha { width: 32px; height: 3px; background: var(--azul-secundaria); margin-top: 16px; }
-  #viewLogin label { display: block; font-size: 13px; color: var(--azul-principal); font-weight: 600; margin-bottom: 6px; margin-top: 20px; }
-  #viewLogin input[type="text"], #viewLogin input[type="password"] { width: 100%; padding: 11px 12px; border: 1px solid var(--borda); border-radius: 3px; font-family: var(--fonte-corpo); font-size: 14px; color: var(--azul-escuro); background: var(--cinza-neutro); }
+  /* ---------------- LOGIN ---------------- */
+  #viewLogin { min-height: 100vh; display: flex; flex-direction: column; align-items: center; background: var(--azul-header); padding-bottom: 40px; }
+  .login-banner {
+    width: 100%; background: linear-gradient(120deg, var(--azul-header) 0%, var(--azul-principal) 55%, #0B2C56 100%);
+    padding: 44px 24px 40px; display: flex; align-items: center; justify-content: center;
+    border-bottom: 3px solid var(--amarelo-acento); position: relative; overflow: hidden;
+  }
+  .login-banner::before, .login-banner::after {
+    content: ''; position: absolute; bottom: -20px; width: 140px; height: 90px;
+    background: rgba(255,255,255,0.045); border-radius: 6px 6px 0 0;
+  }
+  .login-banner::before { left: 8%; }
+  .login-banner::after { right: 10%; height: 120px; }
+  .login-banner img { position: relative; z-index: 1; max-width: 280px; width: 100%; height: auto; }
+  .cartao-login { background: var(--branco); width: 100%; max-width: 380px; margin-top: -28px; padding: 40px 36px 32px; border-radius: 6px; box-shadow: 0 12px 32px rgba(2,23,56,0.28); position: relative; z-index: 2; }
+  .marca { text-align: center; margin-bottom: 28px; }
+  .marca .nome-projeto { font-family: var(--fonte-titulo); font-weight: 800; font-size: 19px; color: var(--azul-principal); letter-spacing: 0.5px; margin: 0; }
+  .marca .nome-instituicao { font-size: 12px; color: var(--texto-secundario); margin: 5px 0 0 0; text-transform: uppercase; letter-spacing: 0.6px; }
+  .marca .linha { width: 36px; height: 3px; background: var(--amarelo-acento); margin: 14px auto 0; border-radius: 2px; }
+  #viewLogin label { display: block; font-size: 12px; color: var(--azul-principal); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; margin-top: 18px; }
+  #viewLogin input[type="text"], #viewLogin input[type="password"] { width: 100%; padding: 11px 12px; border: 1px solid var(--borda); border-radius: 4px; font-family: var(--fonte-corpo); font-size: 14px; color: var(--azul-escuro); background: var(--cinza-neutro); transition: border-color .15s, background .15s; }
   #viewLogin input:focus { outline: none; border-color: var(--azul-secundaria); background: var(--branco); }
-  #viewLogin button.entrar { width: 100%; margin-top: 28px; padding: 12px; background: var(--azul-principal); color: var(--branco); border: none; border-radius: 3px; font-weight: 600; font-size: 14px; cursor: pointer; }
+  #viewLogin button.entrar { width: 100%; margin-top: 26px; padding: 13px; background: var(--azul-principal); color: var(--amarelo-acento); border: none; border-radius: 4px; font-weight: 700; font-size: 13px; letter-spacing: 0.8px; text-transform: uppercase; cursor: pointer; transition: background .15s; }
   #viewLogin button.entrar:hover { background: var(--azul-escuro); }
-  #viewLogin button.entrar:disabled { background: var(--borda); cursor: not-allowed; }
-  .rodape-login { margin-top: 32px; font-size: 12px; color: var(--texto-secundario); }
+  #viewLogin button.entrar:disabled { background: var(--borda); color: var(--texto-secundario); cursor: not-allowed; }
+  .rodape-login { margin-top: 26px; font-size: 11px; color: var(--texto-secundario); text-align: center; }
+  .rodape-logos { display: flex; align-items: center; justify-content: center; gap: 28px; margin-top: 32px; flex-wrap: wrap; padding: 0 20px; }
+  .rodape-logos img { height: 46px; width: auto; opacity: 0.92; }
 
+  /* ---------------- CABECALHO + NAVEGACAO (barra unica visual) ---------------- */
   #viewApp { display: none; }
-  header.app-header { background: var(--azul-principal); color: var(--branco); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-  header.app-header .titulo-area { padding: 16px 0; }
-  header.app-header .titulo { font-family: var(--fonte-titulo); font-size: 18px; }
-  header.app-header .titulo small { display: block; font-size: 12px; color: #C7D0DC; font-weight: 400; margin-top: 2px; }
-  header.app-header .usuario-area { display: flex; align-items: center; gap: 14px; font-size: 13px; }
-  header.app-header button.sair { background: transparent; border: 1px solid var(--branco); color: var(--branco); padding: 6px 14px; border-radius: 3px; font-size: 12px; cursor: pointer; }
-  header.app-header button.sair:hover { background: rgba(255,255,255,0.1); }
+  header.app-header { background: var(--azul-header); color: var(--branco); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  header.app-header .titulo-area { padding: 14px 0; display: flex; align-items: center; gap: 14px; }
+  .selo-logo-header { background: var(--branco); border-radius: 6px; padding: 4px; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex-shrink: 0; }
+  .selo-logo-header img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  header.app-header .titulo { font-family: var(--fonte-titulo); font-size: 16px; font-weight: 700; letter-spacing: 0.3px; }
+  header.app-header .titulo small { display: block; font-size: 11px; color: #9FB0C7; font-weight: 400; margin-top: 2px; letter-spacing: 0.2px; }
+  header.app-header .usuario-area { display: flex; align-items: center; gap: 14px; font-size: 12px; color: #C7D0DC; }
+  header.app-header button.sair { background: transparent; border: 1px solid rgba(255,255,255,0.35); color: var(--branco); padding: 6px 14px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.4px; cursor: pointer; transition: background .15s; }
+  header.app-header button.sair:hover { background: rgba(255,255,255,0.12); }
 
-  nav.menu-principal { background: var(--azul-escuro); padding: 0 32px; display: flex; gap: 4px; }
-  nav.menu-principal button { background: transparent; border: none; color: #C7D0DC; padding: 12px 18px; font-family: var(--fonte-corpo); font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; }
-  nav.menu-principal button.ativo { color: var(--branco); border-bottom-color: var(--azul-secundaria); }
-  nav.menu-principal button:hover { color: var(--branco); }
+  nav.menu-principal { background: var(--azul-header); padding: 0 28px 10px; display: flex; gap: 6px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.06); }
+  nav.menu-principal button { background: transparent; border: none; color: #9FB0C7; padding: 9px 16px; margin-top: 8px; font-family: var(--fonte-corpo); font-size: 12.5px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; cursor: pointer; border-radius: 20px; transition: background .15s, color .15s; }
+  nav.menu-principal button.ativo { color: var(--azul-principal); background: var(--amarelo-acento); }
+  nav.menu-principal button:not(.ativo):hover { color: var(--branco); background: rgba(255,255,255,0.08); }
 
   main { max-width: 1200px; margin: 0 auto; padding: 24px 32px 80px; }
   .painel-conteudo { display: none; }
   .painel-conteudo.ativo { display: block; }
 
+  /* ---------------- CARDS DE KPI (estilo escuro, numero em dourado) ---------------- */
   .cartoes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-  .cartao { background: var(--branco); border: 1px solid var(--borda); border-radius: 4px; padding: 16px; }
-  .cartao .valor { font-family: var(--fonte-titulo); font-size: 26px; font-weight: 700; color: var(--azul-principal); }
-  .cartao .rotulo { font-size: 12px; color: var(--texto-secundario); margin-top: 2px; }
+  .cartao { background: var(--azul-principal); border: none; border-radius: 6px; padding: 16px 18px; box-shadow: var(--sombra-cartao); }
+  .cartao .valor { font-family: var(--fonte-titulo); font-size: 26px; font-weight: 800; color: var(--amarelo-acento); line-height: 1.1; }
+  .cartao .rotulo { font-size: 11.5px; color: #B9C4D6; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
 
-  section { background: var(--branco); border: 1px solid var(--borda); border-radius: 4px; padding: 20px; margin-bottom: 20px; }
-  section h2 { font-family: var(--fonte-titulo); font-size: 15px; margin: 0 0 6px 0; color: var(--azul-principal); }
+  section { background: var(--branco); border: 1px solid var(--borda); border-radius: 6px; padding: 20px 22px; margin-bottom: 20px; box-shadow: var(--sombra-cartao); }
+  section h2 { font-family: var(--fonte-titulo); font-size: 14px; font-weight: 700; margin: 0 0 6px 0; color: var(--azul-principal); text-transform: uppercase; letter-spacing: 0.4px; padding-left: 10px; border-left: 3px solid var(--amarelo-acento); }
   section p.descricao-secao { font-size: 12px; color: var(--texto-secundario); margin: 0 0 14px 0; }
 
-  .nucleos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
-  .nucleo-card { border: 1px solid var(--borda); border-radius: 3px; padding: 10px 12px; font-size: 13px; }
-  .nucleo-card .nome { font-weight: 600; margin-bottom: 4px; }
-  .barra-fundo { background: var(--cinza-neutro); border-radius: 2px; height: 6px; margin: 6px 0; overflow: hidden; }
+  /* ---------------- CARDS TERRITORIAIS (brancos, numero em ciano) ---------------- */
+  .nucleos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .nucleo-card { border: 1px solid var(--borda); border-radius: 6px; padding: 14px 16px; font-size: 13px; background: var(--branco); transition: box-shadow .15s, border-color .15s; }
+  .nucleo-card:hover { box-shadow: 0 4px 14px rgba(9,32,64,0.12); border-color: var(--azul-secundaria); }
+  .nucleo-card .nome { font-weight: 700; color: var(--azul-principal); margin-bottom: 6px; font-size: 13px; }
+  .barra-fundo { background: var(--cinza-neutro); border-radius: 3px; height: 6px; margin: 8px 0; overflow: hidden; }
   .barra-preenchimento { height: 100%; background: var(--azul-secundaria); }
   .barra-preenchimento.conforme { background: var(--verde-sucesso); }
   .barra-preenchimento.acima { background: var(--amarelo-acento); }
   .situacao-texto { font-size: 11px; color: var(--texto-secundario); }
 
   .filtros { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
-  .filtros select, .filtros input { padding: 7px 10px; border: 1px solid var(--borda); border-radius: 3px; font-family: var(--fonte-corpo); font-size: 13px; background: var(--branco); }
+  .filtros select, .filtros input { padding: 8px 11px; border: 1px solid var(--borda); border-radius: 4px; font-family: var(--fonte-corpo); font-size: 13px; background: var(--branco); }
+  .filtros select:focus, .filtros input:focus { outline: none; border-color: var(--azul-secundaria); }
   .filtros label.checkbox { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--texto-secundario); }
 
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 8px 10px; background: var(--azul-principal); color: var(--branco); font-weight: 600; position: sticky; top: 0; }
-  td { padding: 7px 10px; border-bottom: 1px solid var(--cinza-neutro); }
+  th { text-align: left; padding: 9px 10px; background: var(--azul-principal); color: var(--branco); font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.3px; position: sticky; top: 0; }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--cinza-neutro); }
   tbody tr:hover { background: var(--cinza-neutro); }
-  .tabela-scroll { max-height: 480px; overflow-y: auto; border: 1px solid var(--borda); border-radius: 3px; }
+  .tabela-scroll { max-height: 480px; overflow-y: auto; border: 1px solid var(--borda); border-radius: 6px; }
 
   select.select-nucleo { width: 100%; padding: 5px 8px; border: 1px solid var(--borda); border-radius: 3px; font-family: var(--fonte-corpo); font-size: 12px; }
   select.select-nucleo.alterado { border-color: var(--azul-secundaria); background: #EAF7FA; }
 
-  .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .status-badge { display: inline-block; padding: 3px 9px; border-radius: 10px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
   .status-badge.aguardando { background: var(--fundo-erro); color: var(--vermelho-erro); }
   .status-badge.alocada { background: var(--fundo-sucesso); color: var(--verde-sucesso); }
   .status-badge.neutro { background: var(--cinza-neutro); color: var(--texto-secundario); }
 
-  .botao-tabela { background: var(--azul-principal); color: var(--branco); border: none; padding: 5px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .botao-tabela { background: var(--azul-principal); color: var(--branco); border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background .15s; }
   .botao-tabela:hover { background: var(--azul-escuro); }
   .botao-tabela.secundario { background: var(--branco); color: var(--azul-principal); border: 1px solid var(--azul-principal); }
-  a.link-drive { color: var(--azul-secundaria); font-size: 12px; font-weight: 600; text-decoration: none; }
+  a.link-drive { color: var(--azul-secundaria); font-size: 12px; font-weight: 700; text-decoration: none; }
   a.link-drive:hover { text-decoration: underline; }
 
   .rodape-acoes { position: sticky; bottom: 0; background: var(--branco); border-top: 1px solid var(--borda); padding: 14px 32px; display: flex; justify-content: flex-end; gap: 10px; }
-  button.primario { background: var(--azul-principal); color: var(--branco); border: none; padding: 10px 18px; border-radius: 3px; font-weight: 600; font-size: 13px; cursor: pointer; }
+  button.primario { background: var(--azul-principal); color: var(--amarelo-acento); border: none; padding: 10px 18px; border-radius: 4px; font-weight: 700; font-size: 12.5px; letter-spacing: 0.3px; cursor: pointer; transition: background .15s; }
   button.primario:hover { background: var(--azul-escuro); }
-  button.secundario { background: var(--branco); color: var(--azul-principal); border: 1px solid var(--azul-principal); padding: 10px 18px; border-radius: 3px; font-weight: 600; font-size: 13px; cursor: pointer; }
+  button.secundario { background: var(--branco); color: var(--azul-principal); border: 1px solid var(--azul-principal); padding: 10px 18px; border-radius: 4px; font-weight: 700; font-size: 12.5px; cursor: pointer; }
   button:disabled { background: var(--borda); color: var(--branco); cursor: not-allowed; }
 
-  .mensagem { padding: 10px 14px; border-radius: 3px; font-size: 13px; margin-bottom: 14px; display: none; }
+  .mensagem { padding: 11px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 14px; display: none; }
   .mensagem.erro { background: var(--fundo-erro); border: 1px solid var(--vermelho-erro); color: var(--vermelho-erro); }
   .mensagem.sucesso { background: var(--fundo-sucesso); border: 1px solid var(--verde-sucesso); color: var(--verde-sucesso); }
 
-  .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(2,23,56,0.5); align-items: center; justify-content: center; z-index: 10; }
-  .modal { background: var(--branco); border-radius: 4px; padding: 24px; max-width: 420px; width: 90%; }
-  .modal h3 { font-family: var(--fonte-titulo); margin: 0 0 10px 0; color: var(--azul-principal); }
+  .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(2,23,56,0.55); align-items: center; justify-content: center; z-index: 10; padding: 16px; }
+  .modal { background: var(--branco); border-radius: 6px; padding: 24px; max-width: 420px; width: 90%; box-shadow: 0 20px 50px rgba(2,23,56,0.35); }
+  .modal h3 { font-family: var(--fonte-titulo); margin: 0 0 10px 0; color: var(--azul-principal); font-size: 16px; }
   .modal .acoes-modal { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+  /* ---------------- RODAPE INSTITUCIONAL (decorativo) ---------------- */
+  .rodape-institucional {
+    background: var(--azul-header); color: #B9C4D6; font-size: 11.5px; padding: 12px 32px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  .rodape-institucional .selo-status {
+    background: var(--amarelo-acento); color: var(--azul-principal); font-weight: 700; font-size: 10.5px;
+    padding: 4px 12px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+
+  /* ---------------- RESPONSIVIDADE ---------------- */
+  @media (max-width: 900px) {
+    .cartoes { grid-template-columns: repeat(2, 1fr); }
+    main { padding: 18px 16px 70px; }
+    header.app-header { padding: 0 16px; }
+    nav.menu-principal { padding: 0 12px 10px; }
+  }
+  @media (max-width: 560px) {
+    .cartoes { grid-template-columns: 1fr; }
+    header.app-header .titulo { font-size: 14px; }
+    .cartao-login { padding: 32px 22px 26px; max-width: 92vw; }
+    .rodape-institucional { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* Foco visivel via teclado, preservado em todos os controles */
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--azul-secundaria); outline-offset: 1px; }
 </style>
 </head>
 <body>
 
 <div id="viewLogin">
+  <div class="login-banner">
+    <img src="assets/logo-conexoes-criativas.png" alt="Conexões Criativas">
+  </div>
   <div class="cartao-login">
     <div class="marca">
-      <p class="nome-projeto">CONEXÕES CRIATIVAS</p>
-      <p class="nome-instituicao">Instituto BR Arte</p>
+      <p class="nome-projeto">MONITORAMENTO DAS METAS</p>
+      <p class="nome-instituicao">Conexões Criativas · Instituto BR Arte</p>
       <div class="linha"></div>
     </div>
     <form id="formLogin">
@@ -128,16 +190,20 @@
       <input type="text" id="campoUsuario" autocomplete="username" required>
       <label for="campoSenha">Senha</label>
       <input type="password" id="campoSenha" autocomplete="current-password" required>
-      <button type="submit" class="entrar" id="botaoEntrar">ENTRAR</button>
+      <button type="submit" class="entrar" id="botaoEntrar">ACESSAR SISTEMA</button>
       <div class="mensagem erro" id="mensagemErroLogin"></div>
     </form>
     <div class="rodape-login">Central de Monitoramento e Gestão do Projeto</div>
+  </div>
+  <div class="rodape-logos">
+    <img src="assets/logo-instituto-br-arte.png" alt="Instituto BR Arte">
   </div>
 </div>
 
 <div id="viewApp">
   <header class="app-header">
     <div class="titulo-area">
+      <div class="selo-logo-header"><img src="assets/logo-instituto-br-arte.png" alt="Instituto BR Arte"></div>
       <div class="titulo" id="tituloTela">ALOCAÇÃO TERRITORIAL<small id="subtituloTela">Distribuição das 216 turmas entre os 12 núcleos</small></div>
     </div>
     <div class="usuario-area">
@@ -376,6 +442,11 @@
   <div class="rodape-acoes" id="rodapeAlocacao">
     <button class="secundario" id="botaoValidar">Validar distribuição</button>
     <button class="primario" id="botaoSalvar" disabled>Salvar alocações (0)</button>
+  </div>
+
+  <div class="rodape-institucional">
+    <span>Conexões Criativas · Instituto BR Arte · Proposta Transferegov.br nº 29919/2025 · 12 núcleos</span>
+    <span class="selo-status">Monitoramento Operacional</span>
   </div>
 </div>
 
