@@ -252,7 +252,7 @@
         </div>
         <div class="tabela-scroll">
           <table>
-            <thead><tr><th>Indicador</th><th>Previsto</th><th>Realizado</th><th>%</th><th>Situação</th><th>Risco</th><th>Documentação</th><th>Integridade</th></tr></thead>
+            <thead><tr><th>Indicador</th><th>Previsto</th><th>Realizado</th><th>%</th><th>Situação</th><th>Risco</th><th>Diagnóstico</th><th>Recomendação</th><th>Documentação</th><th>Integridade</th><th title="1 = mais urgente, 9 = sem problema">Prioridade</th></tr></thead>
             <tbody id="corpoTabelaMatriz"></tbody>
           </table>
         </div>
@@ -261,6 +261,18 @@
       <section>
         <h2>Visão por núcleo</h2>
         <div class="nucleos-grid" id="gridMonitoramentoPorNucleo"></div>
+      </section>
+
+      <!-- Visível apenas para ADMINISTRADOR/COORDENACAO (controlado em JS) -->
+      <section id="secaoConfiguracaoFaixas" style="display:none;">
+        <h2>Configuração das faixas de criticidade (administração)</h2>
+        <p class="descricao-secao">Define os limites percentuais usados na classificação de metas em toda a Matriz de Auditoria. Alterar aqui muda a leitura de todo o sistema.</p>
+        <div class="tabela-scroll">
+          <table>
+            <thead><tr><th>Rótulo</th><th>% mínimo</th><th>% máximo</th><th></th></tr></thead>
+            <tbody id="corpoTabelaFaixasCriticidade"></tbody>
+          </table>
+        </div>
       </section>
     </div>
 
@@ -398,10 +410,14 @@
 </div>
 
 <div class="modal-fundo" id="modalDrillDown">
-  <div class="modal" style="max-width: 700px;">
+  <div class="modal" style="max-width: 760px;">
     <h3 id="tituloDrillDown">Detalhamento do indicador</h3>
+    <div id="trilhaDrillDown" style="font-size: 12px; color: var(--texto-secundario); margin-bottom: 10px;"></div>
     <div id="corpoModalDrillDown" style="font-size: 13px; max-height: 420px; overflow-y: auto;"></div>
-    <div class="acoes-modal"><button class="primario" id="botaoFecharModalDrillDown">Fechar</button></div>
+    <div class="acoes-modal">
+      <button class="secundario" id="botaoVoltarDrillDown" style="display:none;">Voltar</button>
+      <button class="primario" id="botaoFecharModalDrillDown">Fechar</button>
+    </div>
   </div>
 </div>
 
@@ -475,6 +491,8 @@
       document.getElementById('rotuloUsuarioLogado').textContent = resultado.login + ' (' + resultado.perfil + ')';
       document.getElementById('viewLogin').style.display = 'none';
       document.getElementById('viewApp').style.display = 'block';
+      const podeConfigurarFaixas = resultado.perfil === 'ADMINISTRADOR' || resultado.perfil === 'COORDENACAO';
+      document.getElementById('secaoConfiguracaoFaixas').style.display = podeConfigurarFaixas ? 'block' : 'none';
       await carregarDadosAlocacao();
     } catch (erro) {
       mensagemErroLogin.textContent = erro.message;
@@ -966,9 +984,69 @@
         matriz.length > 0 && matriz[0].DATA_CALCULO
           ? ('Última atualização: ' + new Date(matriz[0].DATA_CALCULO).toLocaleString('pt-BR'))
           : 'Monitoramento ainda não foi calculado - clique em "Atualizar monitoramento".';
+
+      if (sessaoAtual.perfil === 'ADMINISTRADOR' || sessaoAtual.perfil === 'COORDENACAO') {
+        await carregarFaixasCriticidade();
+      }
     } catch (e) {
       mostrarErro(e.message);
     }
+  }
+
+  // ---------------- CONFIGURAÇÃO DAS FAIXAS DE CRITICIDADE (admin) ----------------
+  async function carregarFaixasCriticidade() {
+    try {
+      const faixas = await chamarApi('listarParametrosCriticidade', [sessaoAtual.token]);
+      renderizarFaixasCriticidade(faixas);
+    } catch (e) {
+      mostrarErro(e.message);
+    }
+  }
+
+  function renderizarFaixasCriticidade(faixas) {
+    const corpo = document.getElementById('corpoTabelaFaixasCriticidade');
+    corpo.innerHTML = '';
+    faixas.slice().sort(function(a, b) { return Number(a.ORDEM) - Number(b.ORDEM); }).forEach(function(faixa) {
+      const tr = document.createElement('tr');
+      const inputMin = '<input type="number" step="0.01" value="' + escaparHtml(faixa.PERCENTUAL_MINIMO) + '" style="width:90px;" data-campo="PERCENTUAL_MINIMO">';
+      const inputMax = '<input type="number" step="0.01" value="' + escaparHtml(faixa.PERCENTUAL_MAXIMO) + '" style="width:90px;" data-campo="PERCENTUAL_MAXIMO">';
+      tr.innerHTML =
+        '<td>' + escaparHtml(faixa.ROTULO) + '</td>' +
+        '<td>' + inputMin + '</td>' +
+        '<td>' + inputMax + '</td>' +
+        '<td><button class="botao-tabela" data-id-faixa="' + escaparHtml(faixa.ID_FAIXA) + '">Salvar</button></td>';
+      corpo.appendChild(tr);
+
+      tr.querySelector('button').addEventListener('click', async function() {
+        const botao = this;
+        const idFaixa = botao.getAttribute('data-id-faixa');
+        const inputs = tr.querySelectorAll('input[data-campo]');
+        const minInput = tr.querySelector('input[data-campo="PERCENTUAL_MINIMO"]');
+        const maxInput = tr.querySelector('input[data-campo="PERCENTUAL_MAXIMO"]');
+        if (minInput.value === '' || maxInput.value === '' || isNaN(Number(minInput.value)) || isNaN(Number(maxInput.value))) {
+          mostrarErro('Preencha os dois campos com números válidos.');
+          return;
+        }
+        if (Number(minInput.value) > Number(maxInput.value)) {
+          mostrarErro('O % mínimo não pode ser maior que o % máximo.');
+          return;
+        }
+        botao.disabled = true; botao.textContent = 'Salvando...';
+        try {
+          for (const input of inputs) {
+            const campo = input.getAttribute('data-campo');
+            const valorOriginal = campo === 'PERCENTUAL_MINIMO' ? faixa.PERCENTUAL_MINIMO : faixa.PERCENTUAL_MAXIMO;
+            if (String(input.value) === String(valorOriginal)) continue; // so envia o que mudou
+            await chamarApi('atualizarParametroCriticidade', [sessaoAtual.token, idFaixa, campo, Number(input.value)]);
+          }
+          mostrarSucesso('Faixa "' + faixa.ROTULO + '" atualizada.');
+          await carregarMonitoramento(); // recarrega tudo, inclusive esta tabela - a classificação de toda a matriz depende destas faixas
+        } catch (e) {
+          mostrarErro(e.message);
+          botao.disabled = false; botao.textContent = 'Salvar';
+        }
+      });
+    });
   }
 
   function renderizarPainelExecutivo(p) {
@@ -1034,8 +1112,11 @@
         '<td>' + escaparHtml(item.PERCENTUAL === 'DADO_INSUFICIENTE' ? 'N/D' : item.PERCENTUAL + '%') + '</td>' +
         '<td><span class="status-badge ' + classeCriticidade(item.CRITICIDADE) + '">' + escaparHtml(rotuloCriticidade(item.CRITICIDADE)) + '</span></td>' +
         '<td>' + escaparHtml(rotuloRisco(item.RISCO)) + '</td>' +
+        '<td style="max-width:220px;">' + escaparHtml(item.DIAGNOSTICO) + '</td>' +
+        '<td style="max-width:220px;">' + escaparHtml(item.RECOMENDACAO) + '</td>' +
         '<td>' + (item.DOCUMENTACAO_INCOMPLETA ? 'Incompleta' : 'Completa') + '</td>' +
-        '<td>' + (item.INTEGRIDADE_COM_INCONSISTENCIA ? 'Com inconsistência' : 'OK') + '</td>';
+        '<td>' + (item.INTEGRIDADE_COM_INCONSISTENCIA ? 'Com inconsistência' : 'OK') + '</td>' +
+        '<td style="text-align:center;font-weight:600;">' + escaparHtml(item.PRIORIDADE) + '</td>';
       tr.addEventListener('click', function() { abrirDrillDown(item.ID_INDICADOR); });
       corpo.appendChild(tr);
     });
@@ -1071,34 +1152,158 @@
     }
   });
 
+  // Drill-down em camadas: Projeto -> Meta -> Núcleo -> Modalidade ->
+  // Ação -> Evidência (rodada de decomposição, 07/08/2026). O estado da
+  // navegação fica só em memória (nunca em storage do navegador).
+  let estadoDrillDown = null;
+
   async function abrirDrillDown(idIndicador) {
+    estadoDrillDown = { idIndicador: idIndicador, nomeIndicador: '', idNucleo: null, nomeNucleo: null, idCurso: null, nomeCurso: null };
+    document.getElementById('modalDrillDown').style.display = 'flex';
+    await carregarCamadaDrillDown();
+  }
+
+  async function carregarCamadaDrillDown() {
     try {
-      const d = await chamarApi('obterDrillDownIndicador', [sessaoAtual.token, idIndicador]);
+      const d = await chamarApi('obterDrillDownIndicador',
+        [sessaoAtual.token, estadoDrillDown.idIndicador, estadoDrillDown.idNucleo, estadoDrillDown.idCurso]);
+      estadoDrillDown.nomeIndicador = d.indicador.NOME_INDICADOR;
       document.getElementById('tituloDrillDown').textContent = d.indicador.NOME_INDICADOR;
-      const corpo = document.getElementById('corpoModalDrillDown');
-      const pct = d.indicador.PERCENTUAL === 'DADO_INSUFICIENTE' ? 'N/D' : d.indicador.PERCENTUAL + '%';
-      corpo.innerHTML =
-        '<p><strong>Previsto:</strong> ' + escaparHtml(d.indicador.META_REFERENCIA) +
-        ' | <strong>Realizado:</strong> ' + escaparHtml(d.indicador.VALOR) +
-        ' | <strong>%:</strong> ' + pct + '</p>' +
-        '<p><strong>Diagnóstico:</strong> ' + escaparHtml(d.indicador.DIAGNOSTICO) + '</p>' +
-        '<p><strong>Recomendação:</strong> ' + escaparHtml(d.indicador.RECOMENDACAO) + '</p>' +
-        '<p><strong>Origem do dado:</strong> ' + escaparHtml(d.indicador.ORIGEM_DADO) + '</p>' +
-        '<hr><p><strong>' + d.acoesRelacionadas.length + '</strong> ação(ões) relacionada(s):</p>' +
-        d.acoesRelacionadas.map(function(a) {
-          const linkPasta = a.linkPastaDrive
-            ? '<a class="link-drive" href="' + a.linkPastaDrive + '" target="_blank" rel="noopener noreferrer">Abrir pasta</a>'
-            : 'Sem pasta';
-          const comp = a.completudeDocumental.percentualCompletude;
-          const compTexto = comp === 'DADO_INSUFICIENTE' ? 'N/D' : comp + '%';
-          return '<p>- ' + escaparHtml(a.idAcao) + ' (' + escaparHtml(a.status) + ') | Inscritos: ' + escaparHtml(a.inscritos) +
-            ' | Documentação: ' + compTexto + ' | ' + linkPasta + '</p>';
-        }).join('');
-      document.getElementById('modalDrillDown').style.display = 'flex';
+      renderizarTrilhaDrillDown();
+      renderizarCorpoDrillDown(d);
     } catch (e) {
       mostrarErro(e.message);
     }
   }
+
+  function renderizarTrilhaDrillDown() {
+    const trilha = document.getElementById('trilhaDrillDown');
+    const partes = ['<span class="link-drive" data-nivel="meta">Projeto &rsaquo; ' + escaparHtml(estadoDrillDown.nomeIndicador) + '</span>'];
+    if (estadoDrillDown.nomeNucleo) partes.push('<span class="link-drive" data-nivel="nucleo">' + escaparHtml(estadoDrillDown.nomeNucleo) + '</span>');
+    if (estadoDrillDown.nomeCurso) partes.push('<span>' + escaparHtml(estadoDrillDown.nomeCurso) + '</span>');
+    trilha.innerHTML = partes.join(' &rsaquo; ');
+    trilha.querySelectorAll('[data-nivel]').forEach(function(el) {
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function() {
+        const nivel = el.getAttribute('data-nivel');
+        if (nivel === 'meta') { estadoDrillDown.idNucleo = null; estadoDrillDown.nomeNucleo = null; estadoDrillDown.idCurso = null; estadoDrillDown.nomeCurso = null; }
+        if (nivel === 'nucleo') { estadoDrillDown.idCurso = null; estadoDrillDown.nomeCurso = null; }
+        carregarCamadaDrillDown();
+      });
+    });
+    document.getElementById('botaoVoltarDrillDown').style.display = estadoDrillDown.idNucleo ? 'inline-block' : 'none';
+  }
+
+  document.getElementById('botaoVoltarDrillDown').addEventListener('click', function() {
+    if (estadoDrillDown.idCurso) { estadoDrillDown.idCurso = null; estadoDrillDown.nomeCurso = null; }
+    else if (estadoDrillDown.idNucleo) { estadoDrillDown.idNucleo = null; estadoDrillDown.nomeNucleo = null; }
+    carregarCamadaDrillDown();
+  });
+
+  function renderizarResumoIndicador_(indicador) {
+    const pct = indicador.PERCENTUAL === 'DADO_INSUFICIENTE' ? 'N/D' : indicador.PERCENTUAL + '%';
+    return '<p><strong>Consolidado do projeto</strong> — Previsto: ' + escaparHtml(indicador.META_REFERENCIA) +
+      ' | Realizado: ' + escaparHtml(indicador.VALOR) + ' | %: ' + pct + ' | ' +
+      '<span class="status-badge ' + classeCriticidade(indicador.CRITICIDADE) + '">' + escaparHtml(rotuloCriticidade(indicador.CRITICIDADE)) + '</span></p>' +
+      '<p style="font-size:12px;color:var(--texto-secundario);">' + escaparHtml(indicador.DIAGNOSTICO) + ' ' + escaparHtml(indicador.RECOMENDACAO) + '</p><hr>';
+  }
+
+  function rotuloClassificacaoLinha_(linha) {
+    if (linha.classificacao === 'ANALISE_DISTRIBUICAO') return '<span class="status-badge neutro">Análise de distribuição</span>';
+    return '<span class="status-badge ' + classeCriticidade(linha.classificacao) + '">' + escaparHtml(rotuloCriticidade(linha.classificacao)) + '</span>';
+  }
+
+  function renderizarLinhaDecomposicao_(linha, aoClicar) {
+    const div = document.createElement('div');
+    div.className = 'nucleo-card';
+    let corpoLinha;
+    if (linha.temMetaIndividual) {
+      const pct = typeof linha.percentual === 'number' ? linha.percentual + '%' : 'N/D';
+      corpoLinha = '<div>Previsto: ' + escaparHtml(linha.previsto) + ' | Realizado: ' + escaparHtml(linha.realizado) + ' | ' + pct + '</div>';
+    } else {
+      const conc = typeof linha.percentualConcentracao === 'number' ? linha.percentualConcentracao + '% do total já realizado no projeto' : 'N/D';
+      corpoLinha = '<div>Realizado: ' + escaparHtml(linha.realizado) + ' (' + conc + ')</div>' +
+        '<div style="font-style:italic;font-size:11px;color:var(--texto-secundario);">' + escaparHtml(linha.observacaoMetaIndividual) + '</div>';
+    }
+    div.innerHTML =
+      '<div class="nome">' + escaparHtml(linha.nome) + '</div>' +
+      corpoLinha +
+      '<div style="margin:4px 0;">' + rotuloClassificacaoLinha_(linha) +
+      (linha.risco ? ' <span class="situacao-texto">Risco: ' + escaparHtml(rotuloRisco(linha.risco)) + '</span>' : '') + '</div>' +
+      '<div class="situacao-texto">' + escaparHtml(linha.diagnostico) + '</div>';
+    if (aoClicar) { div.style.cursor = 'pointer'; div.addEventListener('click', aoClicar); }
+    return div;
+  }
+
+  function renderizarCorpoDrillDown(d) {
+    const corpo = document.getElementById('corpoModalDrillDown');
+    corpo.innerHTML = '';
+    corpo.insertAdjacentHTML('beforeend', renderizarResumoIndicador_(d.indicador));
+
+    if (d.camada === 'NUCLEOS') {
+      const decomp = d.decomposicaoPorNucleo;
+      if (decomp && decomp.tipo === 'BINARIO_NUCLEOS_COM_SEM_EXECUCAO') {
+        corpo.insertAdjacentHTML('beforeend', '<p style="font-size:12px;color:var(--texto-secundario);">' + escaparHtml(decomp.observacao) + '</p>');
+        const grid = document.createElement('div'); grid.className = 'nucleos-grid';
+        decomp.linhas.forEach(function(linha) {
+          const div = document.createElement('div'); div.className = 'nucleo-card';
+          div.innerHTML = '<div class="nome">' + escaparHtml(linha.nome) + '</div>' +
+            '<div><span class="status-badge ' + (linha.temAcaoConcluida ? 'alocada' : 'aguardando') + '">' +
+            (linha.temAcaoConcluida ? 'Com execução concluída' : 'Sem execução concluída') + '</span></div>' +
+            '<div class="situacao-texto">' + escaparHtml(linha.diagnostico) + '</div>';
+          grid.appendChild(div);
+        });
+        corpo.appendChild(grid);
+      } else if (decomp) {
+        corpo.insertAdjacentHTML('beforeend', '<p style="font-size:12px;">Núcleos ordenados do pior para o melhor desempenho. Clique em um núcleo para ver as modalidades.</p>');
+        const grid = document.createElement('div'); grid.className = 'nucleos-grid';
+        decomp.forEach(function(linha) {
+          grid.appendChild(renderizarLinhaDecomposicao_(linha, function() {
+            estadoDrillDown.idNucleo = linha.chave; estadoDrillDown.nomeNucleo = linha.nome;
+            carregarCamadaDrillDown();
+          }));
+        });
+        corpo.appendChild(grid);
+      }
+
+    } else if (d.camada === 'MODALIDADES_DO_NUCLEO') {
+      const decomp = d.decomposicaoPorModalidade;
+      if (!decomp.aplicavel) {
+        corpo.insertAdjacentHTML('beforeend', '<p style="font-size:12px;color:var(--texto-secundario);">' + escaparHtml(decomp.motivo) + '</p>');
+      } else {
+        corpo.insertAdjacentHTML('beforeend', '<p style="font-size:12px;">Modalidades do núcleo selecionado. Clique em uma modalidade para ver as ações.</p>');
+        const grid = document.createElement('div'); grid.className = 'nucleos-grid';
+        decomp.linhas.forEach(function(linha) {
+          grid.appendChild(renderizarLinhaDecomposicao_(linha, function() {
+            estadoDrillDown.idCurso = linha.chave; estadoDrillDown.nomeCurso = linha.nome;
+            carregarCamadaDrillDown();
+          }));
+        });
+        corpo.appendChild(grid);
+      }
+
+    } else { // ACOES
+      corpo.insertAdjacentHTML('beforeend', '<p><strong>' + d.acoesRelacionadas.length + '</strong> ação(ões) relacionada(s):</p>');
+      d.acoesRelacionadas.forEach(function(a) {
+        const linkPasta = a.linkPastaDrive
+          ? '<a class="link-drive" href="' + a.linkPastaDrive + '" target="_blank" rel="noopener noreferrer">Abrir pasta</a>'
+          : 'Sem pasta';
+        const comp = a.completudeDocumental.percentualCompletude;
+        const compTexto = comp === 'DADO_INSUFICIENTE' ? 'N/D' : comp + '%';
+        const integridade = a.violacoesIntegridade.length > 0
+          ? '<span style="color:var(--vermelho-erro);">' + a.violacoesIntegridade.length + ' inconsistência(s)</span>'
+          : 'OK';
+        corpo.insertAdjacentHTML('beforeend',
+          '<p>- ' + escaparHtml(a.idAcao) + ' (' + escaparHtml(a.status) + ') | Inscritos: ' + escaparHtml(a.inscritos) +
+          ' | Concluintes: ' + escaparHtml(a.concluintes) +
+          ' | Documentação: ' + compTexto + ' | Integridade: ' + integridade + ' | ' + linkPasta + '</p>');
+      });
+      if (d.acoesRelacionadas.length === 0) {
+        corpo.insertAdjacentHTML('beforeend', '<p class="situacao-texto">Nenhuma ação encontrada nesta combinação.</p>');
+      }
+    }
+  }
+
   document.getElementById('botaoFecharModalDrillDown').addEventListener('click', function() {
     document.getElementById('modalDrillDown').style.display = 'none';
   });
