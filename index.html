@@ -1224,6 +1224,25 @@
       const conc = typeof linha.percentualConcentracao === 'number' ? linha.percentualConcentracao + '% do total já realizado no projeto' : 'N/D';
       corpoLinha = '<div>Realizado: ' + escaparHtml(linha.realizado) + ' (' + conc + ')</div>' +
         '<div style="font-style:italic;font-size:11px;color:var(--texto-secundario);">' + escaparHtml(linha.observacaoMetaIndividual) + '</div>';
+      // Contexto informativo da meta da modalidade no PROJETO INTEIRO
+      // (rodada de correção 07/08/2026) - nunca é a meta desta linha,
+      // por isso fica visualmente separado e com o aviso explícito.
+      if (linha.contextoMetaProjeto && linha.contextoMetaProjeto.aplicavel) {
+        const ctx = linha.contextoMetaProjeto;
+        const pctProjeto = typeof ctx.percentualProjeto === 'number' ? ctx.percentualProjeto + '%' : 'N/D';
+        corpoLinha += '<div style="margin-top:6px;padding:6px 8px;background:var(--cinza-neutro);border-radius:3px;font-size:11px;">' +
+          '<strong>Análise de distribuição</strong><br>' +
+          'Meta oficial da modalidade no projeto inteiro: ' + escaparHtml(ctx.metaOficial) + '<br>' +
+          'Realizado da modalidade no projeto inteiro: ' + escaparHtml(ctx.realizadoProjeto) + ' (' + pctProjeto + ')<br>' +
+          '<span style="color:var(--texto-secundario);font-style:italic;">' + escaparHtml(ctx.observacao) + '</span>' +
+          '</div>';
+      } else if (linha.contextoMetaProjeto && linha.contextoMetaProjeto.motivo) {
+        // Dado insuficiente/inválido no cadastro da modalidade (proteção
+        // defensiva) - declara a insuficiência em vez de esconder ou
+        // fabricar um número.
+        corpoLinha += '<div style="margin-top:6px;font-size:11px;color:var(--texto-secundario);font-style:italic;">' +
+          escaparHtml(linha.contextoMetaProjeto.motivo) + '</div>';
+      }
     }
     div.innerHTML =
       '<div class="nome">' + escaparHtml(linha.nome) + '</div>' +
